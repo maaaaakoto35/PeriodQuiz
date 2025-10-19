@@ -168,23 +168,22 @@ PeriodQuiz/
 │   ├── layout.tsx                  # ルートレイアウト
 │   └── middleware.ts               # Basic認証など
 │
-├── infra/                          # インフラ関連
-│   ├── supabase/                   # Supabase設定
-│   │   ├── migrations/             # マイグレーションファイル
-│   │   │   └── 20251019000000_initial_schema.sql
-│   │   ├── seed.sql                # シードデータ
-│   │   └── config.toml             # Supabase設定
-│   └── docker/
-│       └── docker-compose.yml      # ローカル開発用（参考）
+├── supabase/                       # Supabase設定
+│   ├── migrations/                 # マイグレーションファイル
+│   │   └── 20251019000000_initial_schema.sql
+│   ├── seed.sql                    # シードデータ（任意）
+│   └── config.toml                 # Supabase設定
 │
 ├── public/                         # 静的ファイル
 │   ├── images/
 │   └── favicon.ico
 │
-├── .env.local.example              # 環境変数サンプル
+├── .env.sample                     # 環境変数サンプル
+├── .env.local                      # 環境変数（gitignore）
 ├── .gitignore
 ├── next.config.js
-├── tailwind.config.js
+├── tailwind.config.ts
+├── postcss.config.js
 ├── tsconfig.json
 ├── package.json
 └── README.md

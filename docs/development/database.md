@@ -10,7 +10,7 @@ Supabase (PostgreSQL) のテーブル設計とRow Level Security (RLS) の設定
 ```mermaid
 erDiagram
     events ||--o{ periods : "has many"
-    events ||--o{ sessions : "has many"
+    events ||--o{ users : "has many"
     events ||--|| quiz_control : "has one"
     
     periods ||--o{ period_questions : "has many"
@@ -21,7 +21,7 @@ erDiagram
     questions ||--o{ answers : "has many"
     questions ||--o{ question_displays : "has many"
     
-    sessions ||--o{ answers : "has many"
+    users ||--o{ answers : "has many"
     
     choices ||--o{ answers : "belongs to"
     
@@ -72,7 +72,7 @@ erDiagram
         timestamptz created_at
     }
     
-    sessions {
+    users {
         uuid id PK
         uuid event_id FK
         text nickname "unique per event"
@@ -82,7 +82,7 @@ erDiagram
     
     answers {
         uuid id PK
-        uuid session_id FK
+        uuid user_id FK
         uuid question_id FK
         uuid choice_id FK
         boolean is_correct
@@ -214,12 +214,12 @@ erDiagram
 
 ---
 
-### sessions（セッション）
+### users（ユーザー）
 
 ユーザーのセッションとニックネームを管理するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): セッションID
+- `id` (uuid, PK): ユーザーID
 - `event_id` (uuid, FK): イベントID
 - `nickname` (text): ユーザーのニックネーム
 - `created_at` (timestamptz): 作成日時
@@ -229,13 +229,13 @@ erDiagram
 - UNIQUE(`event_id`, `nickname`) - イベント内でニックネーム重複不可
 
 **インデックス:**
-- `idx_sessions_event_id` on `event_id`
-- `idx_sessions_nickname` on (`event_id`, `nickname`)
+- `idx_users_event_id` on `event_id`
+- `idx_users_nickname` on (`event_id`, `nickname`)
 
 **RLS:**
 - 読み取り: 全員可能
 - 作成: 全員可能
-- Admin: 全セッション参照可能
+- Admin: 全ユーザー参照可能
 
 ---
 
@@ -245,7 +245,7 @@ erDiagram
 
 **カラム:**
 - `id` (uuid, PK): 回答ID
-- `session_id` (uuid, FK): セッションID
+- `user_id` (uuid, FK): ユーザーID
 - `question_id` (uuid, FK): 問題ID
 - `choice_id` (uuid, FK): 選択肢ID
 - `is_correct` (boolean): 正解かどうか
@@ -253,10 +253,10 @@ erDiagram
 - `response_time_ms` (integer): 回答時間（ミリ秒）
 
 **制約:**
-- UNIQUE(`session_id`, `question_id`) - 1問につき1回答のみ
+- UNIQUE(`user_id`, `question_id`) - 1問につき1回答のみ
 
 **インデックス:**
-- `idx_answers_session_id` on `session_id`
+- `idx_answers_user_id` on `user_id`
 - `idx_answers_question_id` on `question_id`
 - `idx_answers_answered_at` on `answered_at`
 
@@ -321,7 +321,7 @@ erDiagram
 **カラム:**
 - `event_id`: イベントID
 - `period_id`: ピリオドID
-- `session_id`: セッションID
+- `user_id`: ユーザーID
 - `nickname`: ニックネーム
 - `correct_count`: 正解数
 - `total_response_time_ms`: 合計回答時間（ミリ秒）
@@ -337,7 +337,7 @@ erDiagram
 
 **カラム:**
 - `event_id`: イベントID
-- `session_id`: セッションID
+- `user_id`: ユーザーID
 - `nickname`: ニックネーム
 - `correct_count`: 全体正解数
 - `total_response_time_ms`: 全体合計回答時間（ミリ秒）
@@ -366,7 +366,7 @@ erDiagram
 ## マイグレーション戦略
 
 ### 初期スキーマ
-- `infra/supabase/migrations/20251019000000_initial_schema.sql`
+- `supabase/migrations/20251019000000_initial_schema.sql`
 
 ### マイグレーションの実行
 
