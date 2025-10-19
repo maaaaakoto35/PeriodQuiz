@@ -5,7 +5,6 @@ import { createClient } from '@/app/_lib/supabase/server';
 import { SESSION_COOKIE_NAME } from '../session.constants';
 import {
   SessionError,
-  DatabaseError,
   getErrorMessage,
 } from '../errors';
 import type { Database } from '@/app/_lib/types/database';

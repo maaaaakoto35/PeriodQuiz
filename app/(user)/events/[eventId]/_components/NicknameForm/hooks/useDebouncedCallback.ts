@@ -7,14 +7,14 @@ import { useCallback, useRef } from 'react';
  * @param delay - デバウンス遅延時間（ミリ秒）
  * @returns デバウンスされたコールバック関数
  */
-export function useDebouncedCallback<T extends (...args: any[]) => any>(
-  callback: T,
+export function useDebouncedCallback<Args extends unknown[], R>(
+  callback: (...args: Args) => R | Promise<R>,
   delay: number
-): (...args: Parameters<T>) => void {
+): (...args: Args) => void {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   return useCallback(
-    (...args: Parameters<T>) => {
+    (...args: Args) => {
       // 既存のタイマーをクリア
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

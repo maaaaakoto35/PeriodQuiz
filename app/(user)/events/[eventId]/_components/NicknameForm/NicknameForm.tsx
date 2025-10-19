@@ -19,7 +19,7 @@ export function NicknameForm({ eventId }: NicknameFormProps) {
     handleSubmit,
   } = useNicknameForm({
     eventId,
-    onSuccess: (registeredNickname) => {
+    onSuccess: () => {
       // 待機画面に遷移
       router.push(`/events/${eventId}/waiting`);
     },

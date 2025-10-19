@@ -3,11 +3,10 @@ import { renderHook, act } from '@testing-library/react';
 
 // Mock Server Actions - BEFORE importing useNicknameForm
 vi.mock('@/app/_lib/actions/user', () => ({
-  registerUser: vi.fn(),
   checkNicknameAvailability: vi.fn(),
 }));
 
-import { registerUser, checkNicknameAvailability } from '@/app/_lib/actions/user';
+import { checkNicknameAvailability } from '@/app/_lib/actions/user';
 import { useNicknameForm } from './useNicknameForm';
 
 describe('useNicknameForm', () => {
