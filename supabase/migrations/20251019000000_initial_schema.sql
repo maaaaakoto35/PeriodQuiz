@@ -1,16 +1,13 @@
 -- PeriodQuiz Initial Schema Migration
 -- Created: 2025-10-19
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- ============================================================================
 -- Tables
 -- ============================================================================
 
 -- events（イベント）
 CREATE TABLE events (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'paused', 'completed')),
@@ -23,8 +20,8 @@ CREATE INDEX idx_events_status ON events(status);
 
 -- periods（ピリオド）
 CREATE TABLE periods (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     order_num INTEGER NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'completed')),
@@ -38,7 +35,7 @@ CREATE INDEX idx_periods_status ON periods(status);
 
 -- questions（問題）
 CREATE TABLE questions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id BIGSERIAL PRIMARY KEY,
     text TEXT NOT NULL,
     image_url TEXT,
     explanation TEXT,
@@ -48,8 +45,8 @@ CREATE TABLE questions (
 
 -- choices（選択肢）
 CREATE TABLE choices (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    question_id BIGINT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     image_url TEXT,
     is_correct BOOLEAN NOT NULL DEFAULT false,
@@ -62,9 +59,9 @@ CREATE INDEX idx_choices_question_id ON choices(question_id);
 
 -- period_questions（ピリオドと問題の紐付け）
 CREATE TABLE period_questions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    period_id UUID NOT NULL REFERENCES periods(id) ON DELETE CASCADE,
-    question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    period_id BIGINT NOT NULL REFERENCES periods(id) ON DELETE CASCADE,
+    question_id BIGINT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
     order_num INTEGER NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(period_id, question_id),
@@ -76,9 +73,10 @@ CREATE INDEX idx_period_questions_question_id ON period_questions(question_id);
 
 -- users（ユーザー）
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     nickname TEXT NOT NULL,
+    session_id UUID UNIQUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_active_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(event_id, nickname)
@@ -86,13 +84,16 @@ CREATE TABLE users (
 
 CREATE INDEX idx_users_event_id ON users(event_id);
 CREATE INDEX idx_users_nickname ON users(event_id, nickname);
+CREATE INDEX idx_users_session_id ON users(session_id);
+
+COMMENT ON COLUMN users.session_id IS 'Unique session identifier stored in user cookie for authentication';
 
 -- answers（回答）
 CREATE TABLE answers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
-    choice_id UUID NOT NULL REFERENCES choices(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    question_id BIGINT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    choice_id BIGINT NOT NULL REFERENCES choices(id) ON DELETE CASCADE,
     is_correct BOOLEAN NOT NULL,
     answered_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     response_time_ms INTEGER NOT NULL,
@@ -105,11 +106,11 @@ CREATE INDEX idx_answers_answered_at ON answers(answered_at);
 
 -- quiz_control（クイズ進行制御）
 CREATE TABLE quiz_control (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     current_screen TEXT NOT NULL DEFAULT 'waiting' CHECK (current_screen IN ('waiting', 'question', 'answer', 'period_result', 'final_result')),
-    current_period_id UUID REFERENCES periods(id) ON DELETE SET NULL,
-    current_question_id UUID REFERENCES questions(id) ON DELETE SET NULL,
+    current_period_id BIGINT REFERENCES periods(id) ON DELETE SET NULL,
+    current_question_id BIGINT REFERENCES questions(id) ON DELETE SET NULL,
     question_displayed_at TIMESTAMPTZ,
     question_closed_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -120,9 +121,9 @@ CREATE INDEX idx_quiz_control_event_id ON quiz_control(event_id);
 
 -- question_displays（問題表示記録）
 CREATE TABLE question_displays (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
-    period_id UUID NOT NULL REFERENCES periods(id) ON DELETE CASCADE,
+    id BIGSERIAL PRIMARY KEY,
+    question_id BIGINT NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+    period_id BIGINT NOT NULL REFERENCES periods(id) ON DELETE CASCADE,
     displayed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     closed_at TIMESTAMPTZ,
     UNIQUE(period_id, question_id)
@@ -172,8 +173,8 @@ ORDER BY correct_count DESC, total_response_time_ms ASC;
 
 -- get_unanswered_time（未回答ユーザーの回答時間を計算）
 CREATE OR REPLACE FUNCTION get_unanswered_time(
-    p_question_id UUID,
-    p_period_id UUID
+    p_question_id BIGINT,
+    p_period_id BIGINT
 )
 RETURNS INTEGER AS $$
 DECLARE
