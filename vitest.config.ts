@@ -9,6 +9,22 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/**',
+        '.next/**',
+        'vitest.config.ts',
+        'vitest.setup.ts',
+        'next.config.ts',
+        'postcss.config.mjs',
+        'eslint.config.mjs',
+        '**/*.d.ts',
+        '**/*.spec.{ts,tsx}',
+        '**/*.test.{ts,tsx}',
+      ],
+    },
   },
   resolve: {
     alias: {
