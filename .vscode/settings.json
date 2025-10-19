@@ -1,0 +1,9 @@
+{
+  "yaml.schemas": {},
+  "files.associations": {
+    "*.chatmode.md": "markdown"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
