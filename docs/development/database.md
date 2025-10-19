@@ -26,7 +26,7 @@ erDiagram
     choices ||--o{ answers : "belongs to"
     
     events {
-        uuid id PK
+        bigint id PK "auto increment"
         text name
         text description
         text status "draft, active, paused, completed"
@@ -36,8 +36,8 @@ erDiagram
     }
     
     periods {
-        uuid id PK
-        uuid event_id FK
+        bigint id PK "auto increment"
+        bigint event_id FK
         text name
         integer order_num
         text status "pending, active, completed"
@@ -46,7 +46,7 @@ erDiagram
     }
     
     questions {
-        uuid id PK
+        bigint id PK "auto increment"
         text text
         text image_url "nullable"
         text explanation "nullable"
@@ -55,8 +55,8 @@ erDiagram
     }
     
     choices {
-        uuid id PK
-        uuid question_id FK
+        bigint id PK "auto increment"
+        bigint question_id FK
         text text
         text image_url "nullable"
         boolean is_correct
@@ -65,46 +65,47 @@ erDiagram
     }
     
     period_questions {
-        uuid id PK
-        uuid period_id FK
-        uuid question_id FK
+        bigint id PK "auto increment"
+        bigint period_id FK
+        bigint question_id FK
         integer order_num
         timestamptz created_at
     }
     
     users {
-        uuid id PK
-        uuid event_id FK
+        bigint id PK "auto increment"
+        bigint event_id FK
         text nickname "unique per event"
+        uuid session_id "unique, nullable"
         timestamptz created_at
         timestamptz last_active_at
     }
     
     answers {
-        uuid id PK
-        uuid user_id FK
-        uuid question_id FK
-        uuid choice_id FK
+        bigint id PK "auto increment"
+        bigint user_id FK
+        bigint question_id FK
+        bigint choice_id FK
         boolean is_correct
         timestamptz answered_at
         integer response_time_ms
     }
     
     quiz_control {
-        uuid id PK
-        uuid event_id FK "unique"
+        bigint id PK "auto increment"
+        bigint event_id FK "unique"
         text current_screen
-        uuid current_period_id FK "nullable"
-        uuid current_question_id FK "nullable"
+        bigint current_period_id FK "nullable"
+        bigint current_question_id FK "nullable"
         timestamptz question_displayed_at "nullable"
         timestamptz question_closed_at "nullable"
         timestamptz updated_at
     }
     
     question_displays {
-        uuid id PK
-        uuid question_id FK
-        uuid period_id FK
+        bigint id PK "auto increment"
+        bigint question_id FK
+        bigint period_id FK
         timestamptz displayed_at
         timestamptz closed_at "nullable"
     }
@@ -119,7 +120,7 @@ erDiagram
 クイズ大会全体を管理するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): イベントID
+- `id` (bigserial, PK): イベントID（自動採番）
 - `name` (text): イベント名
 - `description` (text): 説明
 - `status` (text): 状態 (`draft`, `active`, `paused`, `completed`)
@@ -141,8 +142,8 @@ erDiagram
 イベント内のセクションを管理するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): ピリオドID
-- `event_id` (uuid, FK): イベントID
+- `id` (bigserial, PK): ピリオドID（自動採番）
+- `event_id` (bigint, FK): イベントID
 - `name` (text): ピリオド名
 - `order_num` (integer): 実施順序
 - `status` (text): 状態 (`pending`, `active`, `completed`)
@@ -163,7 +164,7 @@ erDiagram
 クイズ問題を保存するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): 問題ID
+- `id` (bigserial, PK): 問題ID（自動採番）
 - `text` (text): 問題文
 - `image_url` (text, nullable): 問題画像URL
 - `explanation` (text, nullable): 解説
@@ -177,8 +178,8 @@ erDiagram
 問題の選択肢を保存するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): 選択肢ID
-- `question_id` (uuid, FK): 問題ID
+- `id` (bigserial, PK): 選択肢ID（自動採番）
+- `question_id` (bigint, FK): 問題ID
 - `text` (text): 選択肢テキスト
 - `image_url` (text, nullable): 選択肢画像URL
 - `is_correct` (boolean): 正解かどうか
@@ -198,9 +199,9 @@ erDiagram
 どのピリオドにどの問題が含まれるかを管理するテーブル。
 
 **カラム:**
-- `id` (uuid, PK)
-- `period_id` (uuid, FK): ピリオドID
-- `question_id` (uuid, FK): 問題ID
+- `id` (bigserial, PK): 紐付けID（自動採番）
+- `period_id` (bigint, FK): ピリオドID
+- `question_id` (bigint, FK): 問題ID
 - `order_num` (integer): ピリオド内での問題順序
 - `created_at` (timestamptz): 作成日時
 
@@ -219,18 +220,21 @@ erDiagram
 ユーザーのセッションとニックネームを管理するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): ユーザーID
-- `event_id` (uuid, FK): イベントID
+- `id` (bigserial, PK): ユーザーID（自動採番）
+- `event_id` (bigint, FK): イベントID
 - `nickname` (text): ユーザーのニックネーム
+- `session_id` (uuid, nullable): セッションID（Cookie認証用）
 - `created_at` (timestamptz): 作成日時
 - `last_active_at` (timestamptz): 最終アクティブ日時
 
 **制約:**
 - UNIQUE(`event_id`, `nickname`) - イベント内でニックネーム重複不可
+- UNIQUE(`session_id`) - セッションIDは一意
 
 **インデックス:**
 - `idx_users_event_id` on `event_id`
 - `idx_users_nickname` on (`event_id`, `nickname`)
+- `idx_users_session_id` on `session_id`
 
 **RLS:**
 - 読み取り: 全員可能
@@ -244,10 +248,10 @@ erDiagram
 ユーザーの回答を記録するテーブル。
 
 **カラム:**
-- `id` (uuid, PK): 回答ID
-- `user_id` (uuid, FK): ユーザーID
-- `question_id` (uuid, FK): 問題ID
-- `choice_id` (uuid, FK): 選択肢ID
+- `id` (bigserial, PK): 回答ID（自動採番）
+- `user_id` (bigint, FK): ユーザーID
+- `question_id` (bigint, FK): 問題ID
+- `choice_id` (bigint, FK): 選択肢ID
 - `is_correct` (boolean): 正解かどうか
 - `answered_at` (timestamptz): 回答日時
 - `response_time_ms` (integer): 回答時間（ミリ秒）
@@ -271,11 +275,11 @@ erDiagram
 現在の画面状態を管理するテーブル（singleton: イベントごとに1レコード）。
 
 **カラム:**
-- `id` (uuid, PK)
-- `event_id` (uuid, FK): イベントID
+- `id` (bigserial, PK): コントロールID（自動採番）
+- `event_id` (bigint, FK): イベントID
 - `current_screen` (text): 現在の画面 (`waiting`, `question`, `answer`, `period_result`, `final_result`)
-- `current_period_id` (uuid, FK, nullable): 現在のピリオドID
-- `current_question_id` (uuid, FK, nullable): 現在の問題ID
+- `current_period_id` (bigint, FK, nullable): 現在のピリオドID
+- `current_question_id` (bigint, FK, nullable): 現在の問題ID
 - `question_displayed_at` (timestamptz, nullable): 問題表示時刻
 - `question_closed_at` (timestamptz, nullable): 問題締切時刻
 - `updated_at` (timestamptz): 更新日時
@@ -297,9 +301,9 @@ erDiagram
 各問題の表示・締切時刻を記録するテーブル（未回答時間計算用）。
 
 **カラム:**
-- `id` (uuid, PK)
-- `question_id` (uuid, FK): 問題ID
-- `period_id` (uuid, FK): ピリオドID
+- `id` (bigserial, PK): 表示記録ID（自動採番）
+- `question_id` (bigint, FK): 問題ID
+- `period_id` (bigint, FK): ピリオドID
 - `displayed_at` (timestamptz): 表示時刻
 - `closed_at` (timestamptz, nullable): 締切時刻
 
@@ -354,8 +358,8 @@ erDiagram
 未回答ユーザーの回答時間を計算する関数。
 
 **引数:**
-- `p_question_id` (uuid): 問題ID
-- `p_period_id` (uuid): ピリオドID
+- `p_question_id` (bigint): 問題ID
+- `p_period_id` (bigint): ピリオドID
 
 **戻り値:** integer（ミリ秒）
 
