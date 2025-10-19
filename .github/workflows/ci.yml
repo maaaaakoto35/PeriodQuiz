@@ -61,16 +61,6 @@ jobs:
         with:
           version: latest
 
-      - name: Cache Supabase Docker images
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.docker
-            /var/lib/docker
-          key: ${{ runner.os }}-supabase-${{ hashFiles('**/supabase/config.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-supabase-
-
       - name: Start Supabase local environment
         run: supabase start
 
