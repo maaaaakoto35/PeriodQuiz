@@ -2,12 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useNicknameForm } from "./hooks/useNicknameForm";
+import type { SessionErrorReason } from "@/app/_lib/actions/user";
 
 type NicknameFormProps = {
   eventId: number;
+  errorReason?: SessionErrorReason;
 };
 
-export function NicknameForm({ eventId }: NicknameFormProps) {
+export function NicknameForm({ eventId, errorReason }: NicknameFormProps) {
   const router = useRouter();
   const {
     nickname,
@@ -24,6 +26,20 @@ export function NicknameForm({ eventId }: NicknameFormProps) {
       router.push(`/events/${eventId}/waiting`);
     },
   });
+
+  // エラーメッセージのマッピング
+  const getErrorMessage = (reason: SessionErrorReason): string => {
+    switch (reason) {
+      case "quiz_started":
+        return "クイズは既に開始されています。新規参加はできません。";
+      case "session_expired":
+        return "セッションが無効です。ニックネームを入力して再度参加してください。";
+      default:
+        return "";
+    }
+  };
+
+  const sessionErrorMessage = errorReason ? getErrorMessage(errorReason) : "";
 
   return (
     <form
@@ -42,6 +58,14 @@ export function NicknameForm({ eventId }: NicknameFormProps) {
           クイズに参加するためのニックネームを入力してください
         </p>
       </div>
+
+      {sessionErrorMessage && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+          <p className="text-sm text-red-700" role="alert">
+            {sessionErrorMessage}
+          </p>
+        </div>
+      )}
 
       <div className="space-y-2">
         <label

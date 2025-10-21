@@ -11,3 +11,7 @@ export { canRegisterNewUser } from './canRegisterNewUser';
 export type { CanRegisterResult } from './canRegisterNewUser';
 
 export { clearSession } from './clearSession';
+
+export { getSessionErrorReason } from './getSessionErrorReason';
+export type { SessionErrorReason } from './getSessionErrorReason';
+
