@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
-import { validateSession } from "@/app/_lib/actions/user";
+import {
+  validateSession,
+  getSessionErrorReason,
+} from "@/app/_lib/actions/user";
 import { NicknameForm } from "./_components/NicknameForm";
+import type { SessionErrorReason } from "@/app/_lib/actions/user";
 
 type PageProps = {
   params: Promise<{
@@ -23,6 +27,12 @@ export default async function EventPage({ params }: PageProps) {
     redirect(`/events/${eventId}/waiting`);
   }
 
+  // セッション無効な場合のエラー理由を判定
+  let errorReason: SessionErrorReason = null;
+  if (!session.valid) {
+    errorReason = await getSessionErrorReason(eventId);
+  }
+
   return (
     <main
       className="
@@ -32,7 +42,7 @@ export default async function EventPage({ params }: PageProps) {
       bg-gradient-to-br from-blue-50 to-indigo-100
     "
     >
-      <NicknameForm eventId={eventId} />
+      <NicknameForm eventId={eventId} errorReason={errorReason} />
     </main>
   );
 }

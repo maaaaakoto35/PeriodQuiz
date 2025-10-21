@@ -23,7 +23,6 @@
 - [コーディング規約](../docs/development/coding_rules/README.md)
 - [アーキテクチャ設計](../docs/development/architecture.md)
 - [開発ドキュメント](../docs/development/README.md)
-- [開発ワークフロー](../docs/development/WORKFLOW.md) ← gh コマンド、git コマンドの詳細 wind CSS でスタイリング
 
 2. **動作確認（Chrome DevTools MCP 使用）**
 
@@ -223,6 +222,87 @@ gh pr merge <PR番号>
 git branch -D feature/your-feature-name
 git push origin --delete feature/your-feature-name
 ```
+
+---
+
+## � 開発ワークフロー（仕様実装）
+
+### ユーザーストーリーを実装する場合
+
+**1. ブランチ命名規則**
+
+```bash
+# US-001-01であればbranchは feature/us-001-01
+git checkout -b feature/us-001-xx
+```
+
+**2. 仕様の確認と更新**
+
+- `docs/spec/` にある仕様ドキュメントを参照
+- 実装の段階で仕様が変わった場合は、ドキュメントを修正
+- 実装完了時に受け入れ基準のチェックボックスを埋める
+
+**3. 実装フロー**
+
+```bash
+# ブランチ作成
+git checkout -b feature/us-001-xx
+
+# 実装・テスト
+pnpm test:run
+pnpm build
+
+# Chrome DevTools MCP で動作確認
+# - レスポンシブデザイン
+# - フォームのバリデーション
+# - ユーザーインタラクション
+# - エラーハンドリング
+
+# 仕様ドキュメントのチェックボックスを埋める
+# vim docs/spec/001-xxxx.md
+
+# 変更をコミット
+git add -A
+git commit -m "feat: 機能説明 (US-001-xx)
+
+- 実装内容 1
+- 実装内容 2
+テスト: ✅ XX tests passing"
+
+# PR作成
+git push origin feature/us-001-xx
+gh pr create --title "feat: 機能説明 (US-001-xx)" \
+  --body "## 概要
+US-001-xx を実装しました
+
+## 実装内容
+- 実装内容 1
+- 実装内容 2
+
+## テスト結果
+✅ XX tests passing" \
+  --base main
+```
+
+---
+
+## �📖 PR の確認と仕様更新
+
+ユーザーストーリーの実装状況を確認する場合、`gh pr view` コマンドで PR の詳細を確認できます。
+
+```bash
+# PR番号を指定して詳細を確認
+gh pr view <PR番号>
+
+# 例: PR #4 の確認
+gh pr view 4
+```
+
+確認した実装内容に基づいて：
+
+1. 仕様ドキュメントのチェックボックスを埋める
+2. 実装内容が仕様から変わっていないか確認
+3. 必要に応じてドキュメントを修正
 
 ### コミット命名規則
 
