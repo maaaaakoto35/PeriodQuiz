@@ -6,23 +6,9 @@
 -- 1. Admin Tables
 -- ============================================================================
 
--- Admin ユーザーテーブル
-CREATE TABLE admin_users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  username VARCHAR(255) NOT NULL UNIQUE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
-COMMENT ON TABLE admin_users IS
-'Admin ユーザー情報。Basic 認証でのみアクセス';
-
-CREATE INDEX idx_admin_users_username ON admin_users(username);
-
 -- Admin セッションテーブル
 CREATE TABLE admin_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_user_id UUID NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
   session_id UUID NOT NULL UNIQUE,
   last_active_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -31,10 +17,9 @@ CREATE TABLE admin_sessions (
 );
 
 COMMENT ON TABLE admin_sessions IS
-'Admin セッション管理。24 時間有効なセッション';
+'Admin セッション管理。7日間有効なセッション。Basic認証でのみ作成される';
 
 CREATE INDEX idx_admin_sessions_session_id ON admin_sessions(session_id);
-CREATE INDEX idx_admin_sessions_admin_user_id ON admin_sessions(admin_user_id);
 CREATE INDEX idx_admin_sessions_expires_at ON admin_sessions(expires_at);
 
 -- ============================================================================
@@ -70,7 +55,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 COMMENT ON FUNCTION is_admin_session_valid IS
-'Admin セッションが有効かチェック（有効期限内かつアクティビティ有効）';
+'Admin セッションが有効かチェック（7日以内の作成、24時間以内のアクティビティ、期限内）';
 
 -- ============================================================================
 -- 3. Users Table Policies (User Sessions)

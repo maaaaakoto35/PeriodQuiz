@@ -16,78 +16,22 @@ describe('createAdminSession', () => {
     vi.clearAllMocks();
   });
 
-  it('should create admin user and session successfully', async () => {
+  it('should create admin session successfully', async () => {
     const { createClient } = await import('@/app/_lib/supabase/server');
 
     vi.mocked(createClient).mockResolvedValue({
-      from: vi.fn()
-        .mockReturnValueOnce({
+      from: vi.fn().mockReturnValue({
+        insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: null,
-                error: { message: 'not found' },
-              }),
-            }),
-          }),
-        })
-        .mockReturnValueOnce({
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: { id: 'new-admin-id' },
-                error: null,
-              }),
-            }),
-          }),
-        })
-        .mockReturnValueOnce({
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: {
-                  session_id: 'test-session-id-123',
-                },
-                error: null,
-              }),
+            single: vi.fn().mockResolvedValue({
+              data: {
+                session_id: 'test-session-id-123',
+              },
+              error: null,
             }),
           }),
         }),
-    } as any);
-
-    const result = await createAdminSession('testadmin');
-
-    expect(result.success).toBe(true);
-    expect(result.sessionId).toBe('test-session-id-123');
-  });
-
-  it('should use existing admin user if exists', async () => {
-    const { createClient } = await import('@/app/_lib/supabase/server');
-
-    vi.mocked(createClient).mockResolvedValue({
-      from: vi.fn()
-        .mockReturnValueOnce({
-          select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: { id: 'existing-admin-id' },
-                error: null,
-              }),
-            }),
-          }),
-        })
-        .mockReturnValueOnce({
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: {
-                  session_id: 'test-session-id-123',
-                },
-                error: null,
-              }),
-            }),
-          }),
-        }),
+      }),
     } as any);
 
     const result = await createAdminSession('testadmin');
@@ -107,27 +51,16 @@ describe('createAdminSession', () => {
     const { createClient } = await import('@/app/_lib/supabase/server');
 
     vi.mocked(createClient).mockResolvedValue({
-      from: vi.fn()
-        .mockReturnValueOnce({
+      from: vi.fn().mockReturnValue({
+        insert: vi.fn().mockReturnValue({
           select: vi.fn().mockReturnValue({
-            eq: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: { id: 'existing-admin-id' },
-                error: null,
-              }),
-            }),
-          }),
-        })
-        .mockReturnValueOnce({
-          insert: vi.fn().mockReturnValue({
-            select: vi.fn().mockReturnValue({
-              single: vi.fn().mockResolvedValue({
-                data: null,
-                error: { message: 'session error' },
-              }),
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: { message: 'session error' },
             }),
           }),
         }),
+      }),
     } as any);
 
     const result = await createAdminSession('testadmin');
