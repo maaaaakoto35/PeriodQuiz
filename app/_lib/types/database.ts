@@ -34,6 +34,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          id: string
+          username: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          username: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          username?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      admin_sessions: {
+        Row: {
+          id: string
+          admin_user_id: string
+          session_id: string
+          last_active_at: string
+          created_at: string
+          expires_at: string
+        }
+        Insert: {
+          id?: string
+          admin_user_id: string
+          session_id: string
+          last_active_at?: string
+          created_at?: string
+          expires_at: string
+        }
+        Update: {
+          id?: string
+          admin_user_id?: string
+          session_id?: string
+          last_active_at?: string
+          created_at?: string
+          expires_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_sessions_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       answers: {
         Row: {
           answered_at: string
