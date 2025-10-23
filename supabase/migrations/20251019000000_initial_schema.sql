@@ -224,9 +224,11 @@ CREATE POLICY "choices_select_all" ON choices FOR SELECT USING (true);
 -- period_questions: 読み取りは全員可能
 CREATE POLICY "period_questions_select_all" ON period_questions FOR SELECT USING (true);
 
--- users: 読み取り・作成は全員可能
+-- users: 読み取り・作成は全員可能、更新は全員可能（RLSなし）
+-- 注: last_active_at のみを更新し、他のカラムは Server Action で保護
 CREATE POLICY "users_select_all" ON users FOR SELECT USING (true);
 CREATE POLICY "users_insert_all" ON users FOR INSERT WITH CHECK (true);
+CREATE POLICY "users_update_all" ON users FOR UPDATE USING (true);
 
 -- answers: 読み取りは全員可能、作成は全員可能
 CREATE POLICY "answers_select_all" ON answers FOR SELECT USING (true);
