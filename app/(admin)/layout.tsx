@@ -1,3 +1,5 @@
+import { AdminSidebar } from "./_components/AdminSidebar";
+
 export default function AdminLayout({
   children,
 }: {
@@ -16,7 +18,12 @@ export default function AdminLayout({
           </div>
         </div>
       </nav>
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
+
+      <div className="flex">
+        <AdminSidebar />
+
+        <main className="flex-1 py-6 px-4 sm:px-6 lg:px-8">{children}</main>
+      </div>
     </div>
   );
 }
