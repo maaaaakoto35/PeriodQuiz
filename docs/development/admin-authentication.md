@@ -18,33 +18,82 @@ Admin 画面へのアクセスを環境変数ベースの Basic 認証で保護�
              │
              ▼
 ┌─────────────────────────────────────────────────────────┐
-│              Next.js Server Actions                      │
+│              API Routes (Route Handler)                  │
+│         ⚠️ Service Role Key を使用（秘密鍵）             │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │ verifyAdminCredentials                          │   │
-│  │ - 環境変数と認証情報を比較                       │   │
-│  │ - タイミング攻撃対策済み                         │   │
+│  │ POST /api/admin/auth/login                      │   │
+│  │ - Basic 認証ヘッダを検証                         │   │
+│  │ - verifyAdminCredentials で認証情報をチェック  │   │
+│  │ - createAdminSession でセッション作成           │   │
+│  │ - Cookie に admin_session_id を保存             │   │
 │  └──────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │ createAdminSession                              │   │
-│  │ - admin_users に自動作成                         │   │
-│  │ - admin_sessions レコード作成                    │   │
-│  │ - 1 週間有効なセッション                         │   │
+│  │ GET /api/admin/auth/check                       │   │
+│  │ - Cookie から admin_session_id を取得           │   │
+│  │ - verifyAdminSessionId で検証（Service Role Key）   │
+│  │ - ハートビート更新                              │   │
 │  └──────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │ checkAdminAuth                                  │   │
-│  │ - 既存セッション確認                             │   │
-│  │ - ハートビート更新                               │   │
-│  │ - Basic 認証フォールバック                       │   │
+│  │ Admin データ操作                                 │   │
+│  │ - verifyAdminSessionId でセッション検証        │   │
+│  │ - 検証成功後にデータベース操作を実行             │   │
 │  └──────────────────────────────────────────────────┘   │
 └─────────────────┬───────────────────────────────────────┘
                   │
                   ▼
-         ┌─────────────────┐
-         │    Supabase     │
-         │  - RLS ポリシー  │
-         │  - 行レベル保護  │
-         └─────────────────┘
+         ┌─────────────────────┐
+         │      Supabase       │
+         │   - RLS ポリシー     │
+         │   - 行レベル保護     │
+         │（Service Role Key）  │
+         └─────────────────────┘
 ```
+
+---
+
+## 📝 実装パターン
+
+### ✅ 推奨: API Routes で認証・操作
+
+**Admin の CRUD 操作は API Routes で実装します。**
+
+```typescript
+// app/api/admin/events/route.ts
+'use server';
+
+import { verifyAdminSessionId, createAdminClient } from '@/app/_lib/supabase/server-admin';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get('admin_session_id')?.value;
+
+  // セッション検証（Service Role Key で実行）
+  if (!sessionId || !(await verifyAdminSessionId(sessionId))) {
+    return NextResponse.json(
+      { error: '認証が必要です' },
+      { status: 401 }
+    );
+  }
+
+  // Service Role Key で操作実行
+  const supabase = createAdminClient();
+  const { data, error } = await supabase.from('events').insert({
+    name: request.body.name,
+  });
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ data });
+}
+```
+
+### ⚠️ Server Actions は推奨しない
+
+Server Actions では Service Role Key が使用できないため、Admin 操作は API Routes で実装してください。
 
 ---
 
@@ -144,11 +193,63 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 # Admin 認証
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=dev-password-123
+
+# Service Role Key（秘密鍵、サーバー側のみ）
+# ⚠️ 絶対に公開しないこと
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+```
+
+**Service Role Key の取得方法:**
+
+```bash
+# supabase status で表示される Secret key を使用
+supabase status
+# → Secret key: eyJ...
 ```
 
 ### 本番環境
 
 Vercel の環境変数設定から指定：
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- **`SUPABASE_SERVICE_ROLE_KEY`** ⚠️ 秘密鍵
+
+---
+
+## createAdminClient() の使用
+
+API Routes でのみ使用可能です。
+
+```typescript
+import { createAdminClient, verifyAdminSessionId } from '@/app/_lib/supabase/server-admin';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get('admin_session_id')?.value;
+
+  // 1. セッション検証
+  if (!sessionId || !(await verifyAdminSessionId(sessionId))) {
+    return NextResponse.json({ error: '認証が必要です' }, { status: 401 });
+  }
+
+  // 2. Admin クライアント作成（Service Role Key 使用）
+  const supabase = createAdminClient();
+
+  // 3. データ操作実行
+  const { data, error } = await supabase
+    .from('events')
+    .insert({ name: 'New Event' });
+
+  return NextResponse.json({ data, error });
+}
+```
+
+---
 
 ```
 ADMIN_USERNAME=production-admin-username

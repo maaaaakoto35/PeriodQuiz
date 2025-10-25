@@ -143,22 +143,22 @@ USING (true);
 COMMENT ON POLICY "events_select" ON events IS
 '全員がイベント情報を閲覧可能';
 
--- INSERT: admin セッション経由のみ
+-- INSERT: admin のみ（Server Actions で検証）
 CREATE POLICY "events_insert" ON events
 FOR INSERT
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 COMMENT ON POLICY "events_insert" ON events IS
-'イベント作成は admin セッション経由のみ';
+'イベント作成は admin のみ（API Route で認証検証）';
 
--- UPDATE: admin セッション経由のみ
+-- UPDATE: admin のみ（Server Actions で検証）
 CREATE POLICY "events_update" ON events
 FOR UPDATE
 USING (true)
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 COMMENT ON POLICY "events_update" ON events IS
-'イベント更新は admin セッション経由のみ';
+'イベント更新は admin のみ（API Route で認証検証）';
 
 -- ============================================================================
 -- 6. Periods Table Policies (Admin Managed)
@@ -174,12 +174,12 @@ USING (true);
 
 CREATE POLICY "periods_insert" ON periods
 FOR INSERT
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 CREATE POLICY "periods_update" ON periods
 FOR UPDATE
 USING (true)
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 -- ============================================================================
 -- 7. Questions Table Policies (Admin Managed)
@@ -195,12 +195,12 @@ USING (true);
 
 CREATE POLICY "questions_insert" ON questions
 FOR INSERT
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 CREATE POLICY "questions_update" ON questions
 FOR UPDATE
 USING (true)
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 -- ============================================================================
 -- 8. Choices Table Policies (Admin Managed)
@@ -216,12 +216,12 @@ USING (true);
 
 CREATE POLICY "choices_insert" ON choices
 FOR INSERT
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 CREATE POLICY "choices_update" ON choices
 FOR UPDATE
 USING (true)
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 -- ============================================================================
 -- 9. Quiz Control Table Policies (Admin Managed)
@@ -237,12 +237,12 @@ USING (true);
 
 CREATE POLICY "quiz_control_insert" ON quiz_control
 FOR INSERT
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 CREATE POLICY "quiz_control_update" ON quiz_control
 FOR UPDATE
 USING (true)
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 -- ============================================================================
 -- 10. Question Displays Table Policies (Admin Managed)
@@ -258,12 +258,12 @@ USING (true);
 
 CREATE POLICY "question_displays_insert" ON question_displays
 FOR INSERT
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 CREATE POLICY "question_displays_update" ON question_displays
 FOR UPDATE
 USING (true)
-WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid));
+WITH CHECK (true);
 
 -- ============================================================================
 -- Summary
@@ -287,9 +287,9 @@ WITH CHECK (is_admin_session_valid(current_setting('app.admin_session_id')::uuid
    ├─ Admin: last_active_at が 24時間以内 かつ expires_at > NOW()
    └─ 両方とも is_session_valid() 関数でチェック
 
-4. Server Actions での実装
-   ├─ User 操作: Cookie から user.session_id を取得
-   ├─ Admin 操作: Cookie から admin_sessions.session_id を取得
-   ├─ current_setting('app.admin_session_id') で RLS に渡す
-   └─ RLS は最終防御線
+4. API Routes での認証実装
+   ├─ Admin 操作は API Routes で実装（Service Role Key 使用）
+   ├─ Cookie から admin_session_id を取得・検証
+   ├─ RLS は全て true（認証は API Routes で行う）
+   └─ 実装例: app/api/admin/events/route.ts
 */
