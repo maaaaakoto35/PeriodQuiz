@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     cookieStore.set('admin_session_id', sessionResult.sessionId!, {
       httpOnly: true,
       sameSite: 'lax',
-      path: '/admin',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
 

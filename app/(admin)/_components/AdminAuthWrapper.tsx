@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 /**
  * Admin 画面用 Basic 認証コンポーネント
@@ -13,10 +13,21 @@ export function AdminAuthWrapper({
   children: React.ReactNode;
 }): React.ReactNode {
   const router = useRouter();
+  const pathname = usePathname();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ログインページを除外（認証チェックをスキップ）
+  const isLoginPage = pathname === "/admin/login";
+
   useEffect(() => {
+    // ログインページの場合は認証チェックをスキップ
+    if (isLoginPage) {
+      setIsLoading(false);
+      setIsAuthenticated(true); // ログインページを表示できるようにする
+      return;
+    }
+
     // サーバーに認証状態を確認
     async function checkAuth() {
       try {
@@ -28,66 +39,40 @@ export function AdminAuthWrapper({
         if (response.ok) {
           setIsAuthenticated(true);
         } else {
-          // 認証が必要な場合、ユーザーに Basic 認証を促す
-          const credentials = prompt("Admin ユーザー名を入力してください:");
-          if (credentials) {
-            const password = prompt("パスワードを入力してください:");
-            if (password) {
-              // Basic 認証を試みる
-              const encoded = btoa(`${credentials}:${password}`);
-              const response = await fetch("/api/admin/auth/login", {
-                method: "POST",
-                headers: {
-                  Authorization: `Basic ${encoded}`,
-                },
-                credentials: "include",
-              });
-
-              if (response.ok) {
-                setIsAuthenticated(true);
-                // ページをリロード
-                router.refresh();
-              } else {
-                alert("認証に失敗しました");
-                setIsAuthenticated(false);
-              }
-            }
-          }
+          // 認証が必要な場合、ログインページへリダイレクト
+          router.push("/admin/login");
+          return;
         }
       } catch (error) {
         console.error("Auth check failed:", error);
+        router.push("/admin/login");
+        return;
       } finally {
         setIsLoading(false);
       }
     }
 
     checkAuth();
-  }, [router]);
+  }, [router, isLoginPage]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        読み込み中...
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
+    // ログインページにリダイレクト中のため、この状態は一時的
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-          <h1 className="text-2xl font-bold mb-6 text-center">
-            Admin ログイン
-          </h1>
-          <p className="text-gray-600 text-center mb-4">
-            このページを表示するには、Admin 認証が必要です。
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            再度ログインしてみてください
-          </button>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">ログインページへ移動中...</p>
         </div>
       </div>
     );
