@@ -223,13 +223,14 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
       return;
     }
 
-    // Realtime購読を開始
-    setupRealtimeSubscription();
-
-    // 定期ハートビートを開始
-    setupHeartbeatTimer();
+    // 初期化を微小に遅延させる（タイミング問題を回避）
+    const initTimer = setTimeout(() => {
+      setupRealtimeSubscription();
+      setupHeartbeatTimer();
+    }, 100); // 100ms の遅延
 
     return () => {
+      clearTimeout(initTimer);
       cleanup();
     };
   }, [enabled, setupRealtimeSubscription, setupHeartbeatTimer, cleanup]);
