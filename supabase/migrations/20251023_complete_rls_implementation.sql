@@ -231,14 +231,17 @@ DROP POLICY IF EXISTS "quiz_control_select" ON quiz_control;
 DROP POLICY IF EXISTS "quiz_control_insert" ON quiz_control;
 DROP POLICY IF EXISTS "quiz_control_update" ON quiz_control;
 
+-- SELECT: 全員が見える（Realtime購読可能）
 CREATE POLICY "quiz_control_select" ON quiz_control
 FOR SELECT
 USING (true);
 
+-- INSERT: admin のみ（Server Actions で検証）
 CREATE POLICY "quiz_control_insert" ON quiz_control
 FOR INSERT
 WITH CHECK (true);
 
+-- UPDATE: admin のみ（Server Actions で検証）
 CREATE POLICY "quiz_control_update" ON quiz_control
 FOR UPDATE
 USING (true)

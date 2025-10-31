@@ -4,10 +4,8 @@ import { describe, it, expect } from 'vitest'
 export const USER_PAGE_CONFIG = {
   title: 'PeriodQuiz',
   description: 'ピリオドごとにチャンピオンが決まる\nリアルタイムクイズシステム',
-  nicknameLabel: 'ニックネーム',
-  nicknamePlaceholder: 'ニックネームを入力してください',
-  nicknameMaxLength: 20,
-  submitButtonText: '参加する',
+  eventsHeading: '参加可能なイベント',
+  noEventsMessage: '現在、利用可能なイベントがありません',
 } as const
 
 describe('ユーザーページ', () => {
@@ -21,25 +19,27 @@ describe('ユーザーページ', () => {
       expect(USER_PAGE_CONFIG.description).toContain('リアルタイムクイズシステム')
     })
 
-    it('ニックネームの最大文字数が20文字に設定されていること', () => {
-      expect(USER_PAGE_CONFIG.nicknameMaxLength).toBe(20)
+    it('イベント一覧のヘッダーが設定されていること', () => {
+      expect(USER_PAGE_CONFIG.eventsHeading).toBe('参加可能なイベント')
     })
 
-    it('フォームのラベルとプレースホルダーが設定されていること', () => {
-      expect(USER_PAGE_CONFIG.nicknameLabel).toBe('ニックネーム')
-      expect(USER_PAGE_CONFIG.nicknamePlaceholder).toBe('ニックネームを入力してください')
-    })
-
-    it('送信ボタンのテキストが設定されていること', () => {
-      expect(USER_PAGE_CONFIG.submitButtonText).toBe('参加する')
+    it('イベントなしのメッセージが設定されていること', () => {
+      expect(USER_PAGE_CONFIG.noEventsMessage).toBe('現在、利用可能なイベントがありません')
     })
   })
 
-  describe('バリデーション', () => {
-    it('ニックネームの最大文字数が妥当であること', () => {
-      // 最大文字数は1文字以上100文字以下であるべき
-      expect(USER_PAGE_CONFIG.nicknameMaxLength).toBeGreaterThan(0)
-      expect(USER_PAGE_CONFIG.nicknameMaxLength).toBeLessThanOrEqual(100)
+  describe('コンテンツ検証', () => {
+    it('タイトルが有効な長さであること', () => {
+      expect(USER_PAGE_CONFIG.title.length).toBeGreaterThan(0)
+      expect(USER_PAGE_CONFIG.title.length).toBeLessThanOrEqual(50)
+    })
+
+    it('説明文が有効な長さであること', () => {
+      expect(USER_PAGE_CONFIG.description.length).toBeGreaterThan(0)
+    })
+
+    it('イベントヘッダーが有効な長さであること', () => {
+      expect(USER_PAGE_CONFIG.eventsHeading.length).toBeGreaterThan(0)
     })
   })
 })

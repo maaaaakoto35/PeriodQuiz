@@ -23,7 +23,7 @@ export function NicknameForm({ eventId, errorReason }: NicknameFormProps) {
     eventId,
     onSuccess: () => {
       // 待機画面に遷移
-      router.push(`/events/${eventId}/waiting`);
+      router.push(`/events/${eventId}/quiz/waiting`);
     },
   });
 

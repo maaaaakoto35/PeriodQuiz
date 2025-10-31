@@ -24,7 +24,7 @@ export default async function EventPage({ params }: PageProps) {
   // 既にセッションがある場合は待機画面にリダイレクト
   const session = await validateSession();
   if (session.valid && session.user.event_id === eventId) {
-    redirect(`/events/${eventId}/waiting`);
+    redirect(`/events/${eventId}/quiz/waiting`);
   }
 
   // セッション無効な場合のエラー理由を判定
