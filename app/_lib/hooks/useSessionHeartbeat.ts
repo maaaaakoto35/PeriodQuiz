@@ -51,6 +51,8 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const heartbeatTimerRef = useRef<NodeJS.Timeout | null>(null);
   const statusRef = useRef<SessionHeartbeatStatus>('idle');
+  const isSubscribedRef = useRef(false); // 購読状態フラグ
+  const isInitializedRef = useRef(false); // 初期化完了フラグ
 
   /**
    * ステータスを更新
@@ -65,18 +67,26 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
    *
    * セキュリティ上、この操作はサーバー側で実行され、
    * セッションIDの検証を通じて不正なユーザーの更新を防止します
+   *
+   * UI チラつき改善：
+   * - 初回接続時のみ 'updating' を表示
+   * - 初回接続後は更新中でも状態を変更しない（updating を表示しない）
+   * - エラー時のみ 'error' 状態に更新
    */
   const updateLastActiveAt = useCallback(async () => {
-    if (!enabled) return;
+    if (!enabled || !isSubscribedRef.current) return; // 購読済みのみ実行
 
     try {
-      updateStatus('updating');
-      
       // Server Action で更新（セッションID検証付き）
       const result = await updateSessionHeartbeat();
 
       if (result.success) {
-        updateStatus('connected');
+        // 初回接続時に 'connected' に変更
+        if (!isInitializedRef.current) {
+          updateStatus('connected');
+          isInitializedRef.current = true; // 初期化完了
+        }
+        // それ以降は状態を変更しない（チラつき防止）
       } else {
         throw new Error(result.error || 'セッション更新に失敗しました');
       }
@@ -85,6 +95,11 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
       updateStatus('error');
       onError?.(err);
       console.error('Session heartbeat update failed:', err);
+
+      // エラー後は自動的に再試行
+      setTimeout(() => {
+        if (enabled) updateStatus('connected');
+      }, 3000);
     }
   }, [enabled, updateStatus, onError]);
 
@@ -117,25 +132,41 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
           filter: `event_id=eq.${eventId}`,
         },
         async () => {
-          // quiz_control変更を検知したら last_active_at を更新
-          await updateLastActiveAt();
+          // 購読済みの場合のみ更新
+          if (isSubscribedRef.current) {
+            await updateLastActiveAt();
+          }
         }
       );
 
-      // 購読を開始
-      await channel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          updateStatus('connected');
-          // 購読成功時に一度 last_active_at を更新
-          await updateLastActiveAt();
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          updateStatus('error');
-        }
+      // subscribe を正しく待つ
+      const status = await new Promise<
+        'SUBSCRIBED' | 'CHANNEL_ERROR' | 'TIMED_OUT'
+      >((resolve) => {
+        channel.subscribe((status) => {
+          if (
+            status === 'SUBSCRIBED' ||
+            status === 'CHANNEL_ERROR' ||
+            status === 'TIMED_OUT'
+          ) {
+            resolve(status);
+          }
+        });
       });
+
+      if (status === 'SUBSCRIBED') {
+        isSubscribedRef.current = true; // フラグを立てる
+        updateStatus('updating'); // 初回接続時のみ updating を表示
+        // 初回更新（エラーハンドリング付き）
+        await updateLastActiveAt();
+      } else {
+        throw new Error(`Channel subscription failed: ${status}`);
+      }
 
       channelRef.current = channel;
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
+      isSubscribedRef.current = false; // フラグをリセット
       updateStatus('error');
       onError?.(err);
       console.error('Failed to setup realtime subscription:', err);
@@ -155,7 +186,10 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
 
     // heartbeatInterval ごとに last_active_at を更新
     heartbeatTimerRef.current = setInterval(() => {
-      updateLastActiveAt();
+      // 購読済みの場合のみ定期更新
+      if (isSubscribedRef.current) {
+        updateLastActiveAt();
+      }
     }, heartbeatInterval);
   }, [enabled, heartbeatInterval, updateLastActiveAt]);
 
@@ -175,6 +209,8 @@ export function useSessionHeartbeat(options: UseSessionHeartbeatOptions): void {
       channelRef.current = null;
     }
 
+    isSubscribedRef.current = false; // フラグをリセット
+    isInitializedRef.current = false; // 初期化フラグをリセット
     updateStatus('idle');
   }, [updateStatus]);
 
