@@ -1,0 +1,1 @@
+export { updateEventStatus } from './changeEventStatus';

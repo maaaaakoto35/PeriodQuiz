@@ -10,6 +10,7 @@ interface SidebarItem {
 
 const MENU_ITEMS: SidebarItem[] = [
   { href: "/admin", label: "ダッシュボード" },
+  { href: "/admin/events", label: "イベント管理" },
   { href: "/admin/users", label: "ユーザー管理" },
 ];
 
