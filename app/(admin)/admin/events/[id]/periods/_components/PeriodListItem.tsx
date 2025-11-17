@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import type { PeriodRecord } from '@/app/_lib/actions/admin/periods';
+import Link from "next/link";
+import type { PeriodRecord } from "@/app/_lib/actions/admin/periods";
 
 interface PeriodListItemProps {
   period: PeriodRecord;
@@ -40,9 +40,7 @@ export function PeriodListItem({
           <span className="text-sm font-medium text-gray-500">
             #{period.order_num}
           </span>
-          <h3 className="text-lg font-medium text-gray-900">
-            {period.name}
-          </h3>
+          <h3 className="text-lg font-medium text-gray-900">{period.name}</h3>
           <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
             {period.status}
           </span>

@@ -39,7 +39,9 @@ export function PeriodList({ periods, eventId, onUpdate }: PeriodListProps) {
 
   const handleReorder = async (index: number, direction: "up" | "down") => {
     const newPeriods =
-      direction === "up" ? moveUp(localPeriods, index) : moveDown(localPeriods, index);
+      direction === "up"
+        ? moveUp(localPeriods, index)
+        : moveDown(localPeriods, index);
     setLocalPeriods(newPeriods);
 
     const reorderedData = newPeriods.map((p, i) => ({
@@ -109,4 +111,3 @@ export function PeriodList({ periods, eventId, onUpdate }: PeriodListProps) {
     </div>
   );
 }
-
