@@ -179,6 +179,18 @@ export function EventsList() {
                       >
                         編集
                       </Link>
+                      <Link
+                        href={`/admin/events/${event.id}/periods`}
+                        className="
+                          inline-flex items-center justify-center
+                          rounded px-2 py-1
+                          text-xs font-medium text-purple-600
+                          hover:bg-purple-50
+                          transition-colors
+                        "
+                      >
+                        ピリオド
+                      </Link>
                       <button
                         onClick={() => {
                           const validStatuses = {
