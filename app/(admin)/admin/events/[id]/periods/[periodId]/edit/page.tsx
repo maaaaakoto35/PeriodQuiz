@@ -2,26 +2,30 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
-import { getPeriods, updatePeriod } from "@/app/_lib/actions/admin/periods";
+import { useParams } from "next/navigation";
+import { getPeriods } from "@/app/_lib/actions/admin/periods";
+import { usePeriodFormSubmit } from "../../_hooks/usePeriodFormSubmit";
 import { PeriodForm } from "../../_components/PeriodForm";
 import type { PeriodRecord } from "@/app/_lib/actions/admin/periods";
 
 export default function EditPeriodPage() {
-  const router = useRouter();
   const params = useParams();
   const eventId = Number(params.id);
   const periodId = Number(params.periodId);
 
   const [period, setPeriod] = useState<PeriodRecord | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+
+  const { isLoading, error, handleSubmit } = usePeriodFormSubmit({
+    eventId,
+    periodId,
+  });
 
   useEffect(() => {
     const fetchPeriod = async () => {
-      setIsLoading(true);
-      setError("");
+      setIsFetching(true);
+      setFetchError("");
       try {
         const result = await getPeriods({ eventId });
         if (result.success && result.data) {
@@ -29,37 +33,20 @@ export default function EditPeriodPage() {
           if (found) {
             setPeriod(found);
           } else {
-            setError("ピリオドが見つかりません");
+            setFetchError("ピリオドが見つかりません");
           }
         } else {
-          setError("ピリオド情報の取得に失敗しました");
+          setFetchError("ピリオド情報の取得に失敗しました");
         }
       } finally {
-        setIsLoading(false);
+        setIsFetching(false);
       }
     };
 
     fetchPeriod();
   }, [eventId, periodId]);
 
-  const handleSubmit = async (data: { name: string }) => {
-    setIsSubmitting(true);
-    try {
-      const result = await updatePeriod({
-        id: periodId,
-        name: data.name,
-      });
-      if (result.success) {
-        router.push(`/admin/events/${eventId}/periods`);
-      } else {
-        throw new Error(result.error || "ピリオド更新に失敗しました");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
         <p className="text-gray-600">読み込み中...</p>
@@ -67,12 +54,12 @@ export default function EditPeriodPage() {
     );
   }
 
-  if (error || !period) {
+  if (fetchError || !period) {
     return (
       <div className="space-y-6">
         <div className="rounded-md bg-red-50 p-4">
           <p className="text-sm text-red-800">
-            {error || "ピリオドが見つかりません"}
+            {fetchError || "ピリオドが見つかりません"}
           </p>
         </div>
         <Link
@@ -106,8 +93,13 @@ export default function EditPeriodPage() {
         <PeriodForm
           initialData={period}
           onSubmit={handleSubmit}
-          isLoading={isSubmitting}
+          isLoading={isLoading}
         />
+        {error && (
+          <div className="mt-4 rounded-md bg-red-50 p-4">
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+        )}
       </div>
 
       <Link

@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { deletePeriod, reorderPeriods } from "@/app/_lib/actions/admin/periods";
+import { PeriodListItem } from "./PeriodListItem";
+import { moveUp, moveDown } from "./utils/reorderPeriods";
 import type { PeriodRecord } from "@/app/_lib/actions/admin/periods";
 
 interface PeriodListProps {
@@ -35,45 +37,9 @@ export function PeriodList({ periods, eventId, onUpdate }: PeriodListProps) {
     }
   };
 
-  const handleMoveUp = async (index: number) => {
-    if (index === 0) return;
-
-    const newPeriods = [...localPeriods];
-    const [movedPeriod] = newPeriods.splice(index, 1);
-    newPeriods.splice(index - 1, 0, movedPeriod);
-
-    setLocalPeriods(newPeriods);
-
-    const reorderedData = newPeriods.map((p, i) => ({
-      id: p.id,
-      orderNum: i + 1,
-    }));
-
-    setIsLoading(true);
-    setError("");
-    try {
-      const result = await reorderPeriods({
-        eventId,
-        periods: reorderedData,
-      });
-      if (!result.success) {
-        setError(result.error || "順序変更に失敗しました");
-        setLocalPeriods(periods);
-      } else {
-        await onUpdate();
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleMoveDown = async (index: number) => {
-    if (index === localPeriods.length - 1) return;
-
-    const newPeriods = [...localPeriods];
-    const [movedPeriod] = newPeriods.splice(index, 1);
-    newPeriods.splice(index + 1, 0, movedPeriod);
-
+  const handleReorder = async (index: number, direction: "up" | "down") => {
+    const newPeriods =
+      direction === "up" ? moveUp(localPeriods, index) : moveDown(localPeriods, index);
     setLocalPeriods(newPeriods);
 
     const reorderedData = newPeriods.map((p, i) => ({
@@ -126,111 +92,21 @@ export function PeriodList({ periods, eventId, onUpdate }: PeriodListProps) {
       ) : (
         <div className="space-y-3">
           {localPeriods.map((period, index) => (
-            <div
+            <PeriodListItem
               key={period.id}
-              className="
-                flex items-center justify-between
-                rounded-lg border border-gray-200 bg-white p-4
-                transition-shadow hover:shadow-md
-              "
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-500">
-                    #{period.order_num}
-                  </span>
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {period.name}
-                  </h3>
-                  <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-                    {period.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => handleMoveUp(index)}
-                  disabled={index === 0 || isLoading}
-                  title="上へ移動"
-                  className="
-                    p-2 text-gray-400 hover:text-gray-600
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-colors
-                  "
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                </button>
-
-                <button
-                  onClick={() => handleMoveDown(index)}
-                  disabled={index === localPeriods.length - 1 || isLoading}
-                  title="下へ移動"
-                  className="
-                    p-2 text-gray-400 hover:text-gray-600
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-colors
-                  "
-                >
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                <Link
-                  href={`/admin/events/${eventId}/periods/${period.id}/edit`}
-                  className="
-                    inline-flex items-center justify-center
-                    rounded-md px-3 py-2
-                    text-sm font-medium text-blue-600
-                    hover:bg-blue-50
-                    transition-colors
-                  "
-                >
-                  編集
-                </Link>
-
-                <button
-                  onClick={() => handleDelete(period.id)}
-                  disabled={isLoading}
-                  className="
-                    inline-flex items-center justify-center
-                    rounded-md px-3 py-2
-                    text-sm font-medium text-red-600
-                    hover:bg-red-50
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    transition-colors
-                  "
-                >
-                  削除
-                </button>
-              </div>
-            </div>
+              period={period}
+              index={index}
+              totalCount={localPeriods.length}
+              onMoveUp={() => handleReorder(index, "up")}
+              onMoveDown={() => handleReorder(index, "down")}
+              onDelete={handleDelete}
+              eventId={eventId}
+              isLoading={isLoading}
+            />
           ))}
         </div>
       )}
     </div>
   );
 }
+

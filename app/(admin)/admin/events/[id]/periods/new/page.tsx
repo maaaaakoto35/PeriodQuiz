@@ -1,33 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
-import { createPeriod } from "@/app/_lib/actions/admin/periods";
+import { useParams } from "next/navigation";
+import { usePeriodFormSubmit } from "../_hooks/usePeriodFormSubmit";
 import { PeriodForm } from "../_components/PeriodForm";
 
 export default function NewPeriodPage() {
-  const router = useRouter();
   const params = useParams();
   const eventId = Number(params.id);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (data: { name: string }) => {
-    setIsLoading(true);
-    try {
-      const result = await createPeriod({
-        eventId,
-        name: data.name,
-      });
-      if (result.success) {
-        router.push(`/admin/events/${eventId}/periods`);
-      } else {
-        throw new Error(result.error || "ピリオド作成に失敗しました");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { isLoading, error, handleSubmit } = usePeriodFormSubmit({
+    eventId,
+  });
 
   return (
     <div className="space-y-6">
@@ -40,6 +24,11 @@ export default function NewPeriodPage() {
 
       <div className="max-w-2xl rounded-lg border border-gray-200 bg-white p-6">
         <PeriodForm onSubmit={handleSubmit} isLoading={isLoading} />
+        {error && (
+          <div className="mt-4 rounded-md bg-red-50 p-4">
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+        )}
       </div>
 
       <Link
