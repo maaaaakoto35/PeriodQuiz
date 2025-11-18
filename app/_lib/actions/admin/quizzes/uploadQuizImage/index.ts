@@ -1,0 +1,1 @@
+export { uploadQuizImage } from './uploadQuizImage';

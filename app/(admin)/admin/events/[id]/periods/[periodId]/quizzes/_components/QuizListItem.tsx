@@ -1,31 +1,31 @@
-"use client";
-
 import Link from "next/link";
-import type { PeriodRecord } from "@/app/_lib/actions/admin/periods";
+import type { QuizWithChoices } from "@/app/_lib/actions/admin/quizzes";
 
-interface PeriodListItemProps {
-  period: PeriodRecord;
+interface QuizListItemProps {
+  quiz: QuizWithChoices;
   index: number;
-  totalCount: number;
-  onMoveUp: (index: number) => Promise<void>;
-  onMoveDown: (index: number) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
+  total: number;
   eventId: number;
+  periodId: number;
   isLoading: boolean;
+  onDelete: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }
 
-export function PeriodListItem({
-  period,
+export function QuizListItem({
+  quiz,
   index,
-  totalCount,
+  total,
+  eventId,
+  periodId,
+  isLoading,
+  onDelete,
   onMoveUp,
   onMoveDown,
-  onDelete,
-  eventId,
-  isLoading,
-}: PeriodListItemProps) {
+}: QuizListItemProps) {
   const canMoveUp = index > 0;
-  const canMoveDown = index < totalCount - 1;
+  const canMoveDown = index < total - 1;
 
   return (
     <div
@@ -38,19 +38,24 @@ export function PeriodListItem({
       <div className="flex-1">
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-gray-500">
-            #{period.order_num}
+            #{index + 1}
           </span>
-          <h3 className="text-lg font-medium text-gray-900">{period.name}</h3>
-          <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-            {period.status}
-          </span>
+          <h3 className="text-lg font-medium text-gray-900">{quiz.text}</h3>
+          {quiz.image_url && (
+            <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-800">
+              📷 画像あり
+            </span>
+          )}
+        </div>
+        <div className="mt-1 ml-12 text-sm text-gray-600">
+          選択肢: {quiz.choices.length}個
         </div>
       </div>
 
       <div className="flex items-center gap-2">
         {/* 上移動ボタン */}
         <button
-          onClick={() => onMoveUp(index)}
+          onClick={onMoveUp}
           disabled={!canMoveUp || isLoading}
           title="上へ移動"
           className="
@@ -76,7 +81,7 @@ export function PeriodListItem({
 
         {/* 下移動ボタン */}
         <button
-          onClick={() => onMoveDown(index)}
+          onClick={onMoveDown}
           disabled={!canMoveDown || isLoading}
           title="下へ移動"
           className="
@@ -100,9 +105,23 @@ export function PeriodListItem({
           </svg>
         </button>
 
+        {/* プレビューリンク */}
+        <Link
+          href={`/admin/events/${eventId}/periods/${periodId}/quizzes/${quiz.id}/preview`}
+          className="
+            inline-flex items-center justify-center
+            rounded-md px-3 py-2
+            text-sm font-medium text-gray-600
+            hover:bg-gray-50
+            transition-colors
+          "
+        >
+          プレビュー
+        </Link>
+
         {/* 編集リンク */}
         <Link
-          href={`/admin/events/${eventId}/periods/${period.id}/edit`}
+          href={`/admin/events/${eventId}/periods/${periodId}/quizzes/${quiz.id}/edit`}
           className="
             inline-flex items-center justify-center
             rounded-md px-3 py-2
@@ -114,23 +133,9 @@ export function PeriodListItem({
           編集
         </Link>
 
-        {/* クイズ管理リンク */}
-        <Link
-          href={`/admin/events/${eventId}/periods/${period.id}/quizzes`}
-          className="
-            inline-flex items-center justify-center
-            rounded-md px-3 py-2
-            text-sm font-medium text-green-600
-            hover:bg-green-50
-            transition-colors
-          "
-        >
-          クイズ
-        </Link>
-
         {/* 削除ボタン */}
         <button
-          onClick={() => onDelete(period.id)}
+          onClick={onDelete}
           disabled={isLoading}
           className="
             inline-flex items-center justify-center

@@ -1,0 +1,1 @@
+export { deleteQuiz } from './deleteQuiz';
