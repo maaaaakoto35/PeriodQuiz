@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { deleteQuiz, reorderQuizzes } from "@/app/_lib/actions/admin/quizzes";
-import { QuizListItem } from "./QuizListItem";
+import { QuizListItem } from "./components/QuizListItem";
+import { ErrorMessage } from "./components/ErrorMessage";
 import { moveUp, moveDown } from "./utils/reorderQuizzes";
 import type { QuizWithChoices } from "@/app/_lib/actions/admin/quizzes";
 
@@ -67,11 +68,7 @@ export function QuizList({ quizzes, eventId, periodId }: QuizListProps) {
 
   return (
     <div className="space-y-4">
-      {error && (
-        <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{error}</p>
-        </div>
-      )}
+      <ErrorMessage message={error} />
 
       {localQuizzes.length === 0 ? (
         <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center">
