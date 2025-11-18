@@ -114,6 +114,20 @@ export function PeriodListItem({
           編集
         </Link>
 
+        {/* クイズ管理リンク */}
+        <Link
+          href={`/admin/events/${eventId}/periods/${period.id}/quizzes`}
+          className="
+            inline-flex items-center justify-center
+            rounded-md px-3 py-2
+            text-sm font-medium text-green-600
+            hover:bg-green-50
+            transition-colors
+          "
+        >
+          クイズ
+        </Link>
+
         {/* 削除ボタン */}
         <button
           onClick={() => onDelete(period.id)}
