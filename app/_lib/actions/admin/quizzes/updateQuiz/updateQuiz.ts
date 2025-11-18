@@ -102,7 +102,7 @@ export async function updateQuiz(input: unknown): Promise<{
     }
 
     // period_questions から order_num を取得
-    const { data: pq, error: pqError } = await supabase
+    const { data: pq } = await supabase
       .from('period_questions')
       .select('order_num')
       .eq('question_id', validatedInput.id)

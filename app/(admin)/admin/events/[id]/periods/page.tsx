@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getPeriods } from "@/app/_lib/actions/admin/periods";
@@ -15,7 +15,7 @@ export default function PeriodsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchPeriods = async () => {
+  const fetchPeriods = useCallback(async () => {
     setIsLoading(true);
     setError("");
     try {
@@ -28,11 +28,11 @@ export default function PeriodsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [eventId]);
 
   useEffect(() => {
     fetchPeriods();
-  }, [eventId]);
+  }, [fetchPeriods]);
 
   return (
     <div className="space-y-6">

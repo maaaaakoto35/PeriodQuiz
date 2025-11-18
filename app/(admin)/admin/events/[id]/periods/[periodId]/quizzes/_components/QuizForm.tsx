@@ -138,7 +138,6 @@ export function QuizForm({ periodId, eventId, initialData }: QuizFormProps) {
       {/* 選択肢 */}
       <ChoiceFieldArray
         choices={formState.choices}
-        errors={errors}
         onUpdateChoice={updateChoice}
         onAddChoice={addChoice}
         onRemoveChoice={removeChoice}

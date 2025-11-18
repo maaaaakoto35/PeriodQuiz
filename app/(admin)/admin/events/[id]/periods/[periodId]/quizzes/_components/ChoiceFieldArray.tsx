@@ -4,8 +4,11 @@ import type { ChoiceInput } from "@/app/_lib/actions/admin/quizzes";
 
 interface ChoiceFieldArrayProps {
   choices: ChoiceInput[];
-  errors: Record<string, string>;
-  onUpdateChoice: (index: number, field: keyof ChoiceInput, value: any) => void;
+  onUpdateChoice: (
+    index: number,
+    field: keyof ChoiceInput,
+    value: string | boolean
+  ) => void;
   onAddChoice: () => void;
   onRemoveChoice: (index: number) => void;
   onUploadImage: (
@@ -16,7 +19,6 @@ interface ChoiceFieldArrayProps {
 
 export function ChoiceFieldArray({
   choices,
-  errors,
   onUpdateChoice,
   onAddChoice,
   onRemoveChoice,

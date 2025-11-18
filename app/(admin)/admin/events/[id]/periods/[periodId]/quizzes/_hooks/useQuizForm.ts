@@ -38,7 +38,7 @@ export function useQuizForm({ periodId, eventId, initialData }: UseQuizFormProps
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  const updateField = (field: keyof FormState, value: any) => {
+  const updateField = (field: keyof FormState, value: string | ChoiceInput[]) => {
     setFormState((prev) => ({
       ...prev,
       [field]: value,
@@ -50,7 +50,7 @@ export function useQuizForm({ periodId, eventId, initialData }: UseQuizFormProps
     }));
   };
 
-  const updateChoice = (index: number, field: keyof ChoiceInput, value: any) => {
+  const updateChoice = (index: number, field: keyof ChoiceInput, value: string | boolean) => {
     setFormState((prev) => ({
       ...prev,
       choices: prev.choices.map((c, i) =>

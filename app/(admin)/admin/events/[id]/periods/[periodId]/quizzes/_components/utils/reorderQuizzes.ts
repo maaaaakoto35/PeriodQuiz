@@ -1,5 +1,3 @@
-import type { QuizWithChoices } from '@/app/_lib/actions/admin/quizzes';
-
 /**
  * 配列内の要素を1つ上に移動
  */
