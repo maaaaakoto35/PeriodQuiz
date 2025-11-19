@@ -10,13 +10,9 @@ CREATE TABLE events (
     id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'paused', 'completed')),
-    allow_registration BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
-CREATE INDEX idx_events_status ON events(status);
 
 -- periods（ピリオド）
 CREATE TABLE periods (
@@ -108,7 +104,7 @@ CREATE INDEX idx_answers_answered_at ON answers(answered_at);
 CREATE TABLE quiz_control (
     id BIGSERIAL PRIMARY KEY,
     event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    current_screen TEXT NOT NULL DEFAULT 'waiting' CHECK (current_screen IN ('waiting', 'question', 'answer', 'period_result', 'final_result')),
+    current_screen TEXT NOT NULL DEFAULT 'waiting' CHECK (current_screen IN ('waiting', 'question', 'answer', 'break', 'period_result', 'final_result')),
     current_period_id BIGINT REFERENCES periods(id) ON DELETE SET NULL,
     current_question_id BIGINT REFERENCES questions(id) ON DELETE SET NULL,
     question_displayed_at TIMESTAMPTZ,

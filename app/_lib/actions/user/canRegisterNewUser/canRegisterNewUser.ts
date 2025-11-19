@@ -20,10 +20,10 @@ export async function canRegisterNewUser(
 ): Promise<CanRegisterResult> {
   const supabase = await createClient();
 
-  // イベント情報を取得
+  // イベント情報を確認（存在確認のみ）
   const { data: event, error: eventError } = await supabase
     .from('events')
-    .select('allow_registration')
+    .select('id')
     .eq('id', eventId)
     .single();
 
@@ -31,13 +31,6 @@ export async function canRegisterNewUser(
     return {
       canRegister: false,
       reason: 'イベントが見つかりません',
-    };
-  }
-
-  if (!event.allow_registration) {
-    return {
-      canRegister: false,
-      reason: '現在、新規登録は受け付けていません',
     };
   }
 

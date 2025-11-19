@@ -8,7 +8,6 @@ export default async function UserPage() {
   const { data: events, error } = await supabase
     .from("events")
     .select("id, name, description")
-    .eq("status", "active")
     .order("created_at", { ascending: false });
 
   return (

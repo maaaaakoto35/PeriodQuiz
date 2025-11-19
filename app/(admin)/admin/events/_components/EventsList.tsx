@@ -4,24 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   getEvents,
-  updateEventStatus,
   deleteEvent,
   type EventRecord,
 } from "@/app/_lib/actions/admin/events";
-
-const statusLabels: Record<string, string> = {
-  draft: "ドラフト",
-  active: "実施中",
-  paused: "一時停止",
-  completed: "完了",
-};
-
-const statusColors: Record<string, string> = {
-  draft: "bg-gray-100 text-gray-800",
-  active: "bg-green-100 text-green-800",
-  paused: "bg-yellow-100 text-yellow-800",
-  completed: "bg-blue-100 text-blue-800",
-};
 
 export function EventsList() {
   const [events, setEvents] = useState<EventRecord[]>([]);
@@ -45,30 +30,6 @@ export function EventsList() {
   useEffect(() => {
     loadEvents();
   }, []);
-
-  // ステータス変更
-  const handleStatusChange = async (eventId: number, newStatus: string) => {
-    setActionInProgress(eventId);
-    const validStatuses = ["draft", "active", "paused", "completed"];
-
-    if (!validStatuses.includes(newStatus)) {
-      setError("無効なステータスです");
-      setActionInProgress(null);
-      return;
-    }
-
-    const result = await updateEventStatus({
-      id: eventId,
-      status: newStatus,
-    });
-
-    if (result.success && result.data) {
-      setEvents(events.map((e) => (e.id === eventId ? result.data! : e)));
-    } else {
-      setError(result.error || "ステータス更新に失敗しました");
-    }
-    setActionInProgress(null);
-  };
 
   // イベント削除
   const handleDelete = async (eventId: number) => {
@@ -132,9 +93,6 @@ export function EventsList() {
                   イベント名
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  ステータス
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   作成日時
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
@@ -152,15 +110,6 @@ export function EventsList() {
                         {event.description}
                       </p>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-                        statusColors[event.status]
-                      }`}
-                    >
-                      {statusLabels[event.status]}
-                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(event.created_at).toLocaleDateString("ja-JP")}
@@ -191,36 +140,18 @@ export function EventsList() {
                       >
                         ピリオド
                       </Link>
-                      <button
-                        onClick={() => {
-                          const validStatuses = {
-                            draft: ["active"],
-                            active: ["paused", "completed"],
-                            paused: ["active", "completed"],
-                            completed: [],
-                          };
-                          const nextStatuses =
-                            validStatuses[
-                              event.status as keyof typeof validStatuses
-                            ] || [];
-                          if (nextStatuses.length > 0) {
-                            handleStatusChange(event.id, nextStatuses[0]);
-                          }
-                        }}
-                        disabled={actionInProgress === event.id}
+                      <Link
+                        href={`/admin/control?eventId=${event.id}`}
                         className="
                           inline-flex items-center justify-center
                           rounded px-2 py-1
-                          text-xs font-medium text-green-600
-                          hover:bg-green-50
-                          disabled:text-gray-400
+                          text-xs font-medium text-orange-600
+                          hover:bg-orange-50
                           transition-colors
                         "
                       >
-                        {actionInProgress === event.id
-                          ? "処理中..."
-                          : "ステータス"}
-                      </button>
+                        制御
+                      </Link>
                       <button
                         onClick={() => handleDelete(event.id)}
                         disabled={actionInProgress === event.id}

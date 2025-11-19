@@ -164,30 +164,24 @@ export type Database = {
       }
       events: {
         Row: {
-          allow_registration: boolean
           created_at: string
           description: string
           id: number
           name: string
-          status: string
           updated_at: string
         }
         Insert: {
-          allow_registration?: boolean
           created_at?: string
           description: string
           id?: number
           name: string
-          status?: string
           updated_at?: string
         }
         Update: {
-          allow_registration?: boolean
           created_at?: string
           description?: string
           id?: number
           name?: string
-          status?: string
           updated_at?: string
         }
         Relationships: []
