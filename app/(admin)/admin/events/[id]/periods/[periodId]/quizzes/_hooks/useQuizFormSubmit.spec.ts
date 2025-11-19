@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useQuizFormSubmit } from './useQuizFormSubmit';
-import * as quizActions from '@/app/_lib/actions/admin/quizzes';
 
 vi.mock('@/app/_lib/actions/admin/quizzes', () => ({
   createQuiz: vi.fn(),

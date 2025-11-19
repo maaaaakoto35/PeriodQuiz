@@ -215,7 +215,7 @@ export function QuizControlPanel({ eventId }: QuizControlPanelProps) {
         setIsUpdating(false);
       }
     },
-    [state, eventId]
+    [state, eventId, supabase]
   );
 
   if (isLoading) {

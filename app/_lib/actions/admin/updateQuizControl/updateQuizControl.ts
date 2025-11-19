@@ -4,6 +4,7 @@ import { createAdminClient } from '@/app/_lib/supabase/server-admin';
 import { checkAdminAuth } from '../checkAdminAuth';
 import { QuizScreen } from '@/app/_lib/types/quiz';
 import { QUIZ_TRANSITION_RULES } from '@/app/_lib/constants/quiz-transition';
+import { Database } from '@/app/_lib/types/database';
 
 export interface UpdateQuizControlInput {
   eventId: number;
@@ -169,10 +170,9 @@ export async function updateQuizControl(
  * - 次の問題を決定
  * - 次ピリオドまたは次問題を決定
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleQuestionTransition(
-  supabase: any,
-  currentControl: Record<string, any>,
+  supabase: ReturnType<typeof createAdminClient>,
+  currentControl: Database['public']['Tables']['quiz_control']['Row'],
   eventId: number
 ): Promise<
   | { success: true; currentPeriodId: number; currentQuestionId: number }
@@ -180,7 +180,6 @@ async function handleQuestionTransition(
 > {
   // 初回（waiting → question）の場合は第1ピリオドの第1問を取得
   if (currentControl.current_screen === 'waiting') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: firstPeriod, error: periodError } = await supabase
       .from('periods')
       .select('id')
@@ -196,7 +195,6 @@ async function handleQuestionTransition(
       };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: firstQuestion, error: qError } = await supabase
       .from('period_questions')
       .select('question_id')
@@ -213,7 +211,6 @@ async function handleQuestionTransition(
     }
 
     // question_displays を insert
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: displayError } = await supabase
       .from('question_displays')
       .insert({
@@ -243,14 +240,21 @@ async function handleQuestionTransition(
     currentControl.current_screen === 'break'
   ) {
     const currentPeriodId = currentControl.current_period_id;
+    const currentQuestionId = currentControl.current_question_id;
+
+    if (!currentPeriodId || !currentQuestionId) {
+      return {
+        success: false,
+        error: '現在の状態が不正です',
+      };
+    }
 
     // 現在の問題の順序を取得
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: currentPQ, error: cpqError } = await supabase
       .from('period_questions')
       .select('order_num')
       .eq('period_id', currentPeriodId)
-      .eq('question_id', currentControl.current_question_id)
+      .eq('question_id', currentQuestionId)
       .single();
 
     if (cpqError || !currentPQ) {
@@ -261,7 +265,6 @@ async function handleQuestionTransition(
     }
 
     // 次の問題を探す
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: nextPQ, error: npqError } = await supabase
       .from('period_questions')
       .select('question_id')
@@ -274,7 +277,6 @@ async function handleQuestionTransition(
     if (!npqError && nextPQ) {
       // 次の問題が存在
       // question_displays を insert
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: displayError } = await supabase
         .from('question_displays')
         .insert({
@@ -310,7 +312,13 @@ async function handleQuestionTransition(
     // currentControl.current_period_id には次ピリオドが既にセットされている
     const nextPeriodId = currentControl.current_period_id;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (!nextPeriodId) {
+      return {
+        success: false,
+        error: 'ピリオドの問題が見つかりません。最終問題を終えた可能性があります。',
+      };
+    }
+
     const { data: firstQuestion, error: fqError } = await supabase
       .from('period_questions')
       .select('question_id')
@@ -327,7 +335,6 @@ async function handleQuestionTransition(
     }
 
     // question_displays を insert
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: displayError } = await supabase
       .from('question_displays')
       .insert({
@@ -360,19 +367,28 @@ async function handleQuestionTransition(
 /**
  * answer画面への遷移処理
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handleAnswerTransition(
-  supabase: any,
-  currentControl: Record<string, any>
+  supabase: ReturnType<typeof createAdminClient>,
+  currentControl: Database['public']['Tables']['quiz_control']['Row']
 ): Promise<{ success: true } | { success: false; error: string }> {
+  const currentPeriodId = currentControl.current_period_id;
+  const currentQuestionId = currentControl.current_question_id;
+
+  if (!currentPeriodId || !currentQuestionId) {
+    return {
+      success: false,
+      error: '現在の状態が不正です',
+    };
+  }
+
   // question_displays の closed_at を update
   const { error: displayError } = await supabase
     .from('question_displays')
     .update({
       closed_at: new Date().toISOString(),
     })
-    .eq('period_id', currentControl.current_period_id)
-    .eq('question_id', currentControl.current_question_id);
+    .eq('period_id', currentPeriodId)
+    .eq('question_id', currentQuestionId);
 
   if (displayError) {
     console.error('[handleAnswerTransition] Display update error:', displayError);
@@ -389,16 +405,22 @@ async function handleAnswerTransition(
  * period_result画面への遷移処理
  * 次のピリオドを決定
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function handlePeriodResultTransition(
-  supabase: any,
-  currentControl: Record<string, any>,
+  supabase: ReturnType<typeof createAdminClient>,
+  currentControl: Database['public']['Tables']['quiz_control']['Row'],
   eventId: number
 ): Promise<
   | { success: true; nextPeriodId: number | null }
   | { success: false; error: string }
 > {
   const currentPeriodId = currentControl.current_period_id;
+
+  if (!currentPeriodId) {
+    return {
+      success: false,
+      error: 'ピリオド情報が見つかりません',
+    };
+  }
 
   // 現在のピリオドの order_num を取得
   const currentOrderNum = await getPeriodOrderNum(supabase, currentPeriodId);
@@ -431,8 +453,7 @@ async function handlePeriodResultTransition(
 /**
  * ピリオドの order_num を取得
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function getPeriodOrderNum(supabase: any, periodId: number): Promise<number> {
+async function getPeriodOrderNum(supabase: ReturnType<typeof createAdminClient>, periodId: number): Promise<number> {
   const { data, error } = await supabase
     .from('periods')
     .select('order_num')
