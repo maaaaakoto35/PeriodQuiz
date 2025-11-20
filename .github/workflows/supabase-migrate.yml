@@ -1,0 +1,36 @@
+name: Supabase マイグレーション
+# ref: https://github.com/supabase/supabase-action-example/blob/f21060975e7a8d76a75a3f547f2873fa4f8ee945/.github/workflows/production.yaml
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "supabase/migrations/**"
+      - "supabase/config.toml"
+      - ".github/workflows/supabase-migrate.yml"
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    name: Supabaseマイグレーション実行
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: supabase link --project-ref $SUPABASE_PROJECT_ID
+
+      - run: supabase db push
+
+      - run: |
+          echo "✅ Supabaseマイグレーション完了しました" >> $GITHUB_STEP_SUMMARY
+          echo "**マイグレーション** が本番環境に適用されました" >> $GITHUB_STEP_SUMMARY
