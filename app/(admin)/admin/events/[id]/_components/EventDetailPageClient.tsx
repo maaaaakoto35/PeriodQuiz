@@ -86,13 +86,6 @@ export function EventDetailPageClient({ id }: EventDetailPageClientProps) {
     return null;
   }
 
-  const statusText = {
-    draft: "ドラフト",
-    active: "実施中",
-    paused: "一時停止",
-    completed: "完了",
-  }[event.status];
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -114,14 +107,6 @@ export function EventDetailPageClient({ id }: EventDetailPageClientProps) {
         <div className="rounded-lg border border-gray-200 bg-white p-6 h-fit space-y-4">
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase">
-              ステータス
-            </p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
-              {statusText}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase">
               作成日時
             </p>
             <p className="mt-1 text-sm text-gray-900">
@@ -134,14 +119,6 @@ export function EventDetailPageClient({ id }: EventDetailPageClientProps) {
             </p>
             <p className="mt-1 text-sm text-gray-900">
               {new Date(event.updated_at).toLocaleDateString("ja-JP")}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase">
-              新規参加者登録
-            </p>
-            <p className="mt-1 text-sm text-gray-900">
-              {event.allow_registration ? "許可" : "禁止"}
             </p>
           </div>
         </div>

@@ -7,8 +7,6 @@ export type EventRecord = {
   id: number;
   name: string;
   description: string;
-  status: 'draft' | 'active' | 'paused' | 'completed';
-  allow_registration: boolean;
   created_at: string;
   updated_at: string;
 };

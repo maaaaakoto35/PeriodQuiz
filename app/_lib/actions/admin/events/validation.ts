@@ -27,14 +27,6 @@ export const updateEventSchema = eventFormSchema.extend({
 });
 
 /**
- * イベントステータス変更時のスキーマ
- */
-export const updateEventStatusSchema = z.object({
-  id: z.string().or(z.number()).pipe(z.coerce.number()),
-  status: z.enum(['draft', 'active', 'paused', 'completed']),
-});
-
-/**
  * イベント削除時のスキーマ
  */
 export const deleteEventSchema = z.object({
@@ -44,5 +36,4 @@ export const deleteEventSchema = z.object({
 // 型抽出
 export type CreateEventInput = z.infer<typeof createEventSchema>;
 export type UpdateEventInput = z.infer<typeof updateEventSchema>;
-export type UpdateEventStatusInput = z.infer<typeof updateEventStatusSchema>;
 export type DeleteEventInput = z.infer<typeof deleteEventSchema>;
