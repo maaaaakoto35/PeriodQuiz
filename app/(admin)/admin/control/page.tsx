@@ -1,52 +1,103 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/app/_lib/supabase/client";
-import { QuizControlPanel } from "./_components/QuizControlPanel";
+import { createClient as createServerClient } from "@/app/_lib/supabase/server";
+import { QuizControlPanel } from "./_components";
+import { type QuizControlState } from "./_hooks";
+import { type QuizScreen } from "@/app/_lib/types/quiz";
 
-export default function ControlPage() {
-  const searchParams = useSearchParams();
-  const eventId = searchParams.get("eventId");
-  const [eventName, setEventName] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface ControlPageProps {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
 
-  useEffect(() => {
-    if (!eventId) {
-      setError("イベントIDが指定されていません");
-      setIsLoading(false);
-      return;
+/**
+ * クイズ制御ページ（Server Component）
+ *
+ * 責務:
+ * - 初期ロード（4つのクエリをサーバーで実行）
+ * - EventName、QuizControl、Period、Question、UserCount を取得
+ * - QuizControlPanel に初期データを Props で渡す
+ */
+async function getQuizControlData(eventId: number): Promise<{
+  eventName: string;
+  initialState: QuizControlState;
+  userCount: number;
+} | null> {
+  const supabase = await createServerClient();
+
+  try {
+    // 1. イベント名を取得
+    const { data: event, error: eventError } = await supabase
+      .from("events")
+      .select("name")
+      .eq("id", eventId)
+      .single();
+
+    if (eventError || !event) {
+      return null;
     }
 
-    const loadEventName = async () => {
-      try {
-        const supabase = createClient();
-        const { data, error: queryError } = await supabase
-          .from("events")
-          .select("name")
-          .eq("id", parseInt(eventId))
-          .single();
+    // 2. クイズ制御情報を取得
+    const { data: quizControl, error: controlError } = await supabase
+      .from("quiz_control")
+      .select("*")
+      .eq("event_id", eventId)
+      .single();
 
-        if (queryError || !data) {
-          setError("イベントが見つかりません");
-          return;
-        }
+    if (controlError || !quizControl) {
+      return null;
+    }
 
-        setEventName(data.name);
-      } catch (err) {
-        console.error("Failed to load event:", err);
-        setError("イベント情報の読み込みに失敗しました");
-      } finally {
-        setIsLoading(false);
-      }
+    // 3. ピリオド情報を取得
+    let periodName = "";
+    if (quizControl.current_period_id) {
+      const { data: period } = await supabase
+        .from("periods")
+        .select("name")
+        .eq("id", quizControl.current_period_id)
+        .single();
+      periodName = period?.name || "";
+    }
+
+    // 4. 質問情報を取得
+    let questionText = "";
+    if (quizControl.current_question_id) {
+      const { data: question } = await supabase
+        .from("questions")
+        .select("text")
+        .eq("id", quizControl.current_question_id)
+        .single();
+      questionText = question?.text || "";
+    }
+
+    // 5. ユーザー数を取得
+    const { count: total } = await supabase
+      .from("users")
+      .select("*", { count: "exact" })
+      .eq("event_id", eventId);
+
+    const initialState: QuizControlState = {
+      currentScreen: quizControl.current_screen as QuizScreen,
+      currentPeriodId: quizControl.current_period_id,
+      currentQuestionId: quizControl.current_question_id,
+      periodName,
+      questionText,
     };
 
-    loadEventName();
-  }, [eventId]);
+    return {
+      eventName: event.name,
+      initialState,
+      userCount: total || 0,
+    };
+  } catch (err) {
+    console.error("[getQuizControlData] Error:", err);
+    return null;
+  }
+}
 
-  if (!eventId) {
+export default async function ControlPage({ searchParams }: ControlPageProps) {
+  const params = await searchParams;
+  const eventIdParam = params.eventId;
+
+  if (!eventIdParam || typeof eventIdParam !== "string") {
     return (
       <div className="space-y-6">
         <div className="rounded-md bg-red-50 p-4">
@@ -54,7 +105,7 @@ export default function ControlPage() {
         </div>
         <Link
           href="/admin/events"
-          className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+          className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
         >
           イベント一覧に戻る
         </Link>
@@ -62,23 +113,35 @@ export default function ControlPage() {
     );
   }
 
-  if (isLoading) {
+  const eventId = parseInt(eventIdParam, 10);
+
+  if (isNaN(eventId)) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-600">読み込み中...</p>
+      <div className="space-y-6">
+        <div className="rounded-md bg-red-50 p-4">
+          <p className="text-sm text-red-800">イベントIDが無効です</p>
+        </div>
+        <Link
+          href="/admin/events"
+          className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
+        >
+          イベント一覧に戻る
+        </Link>
       </div>
     );
   }
 
-  if (error) {
+  const data = await getQuizControlData(eventId);
+
+  if (!data) {
     return (
       <div className="space-y-6">
         <div className="rounded-md bg-red-50 p-4">
-          <p className="text-sm text-red-800">{error}</p>
+          <p className="text-sm text-red-800">クイズ制御情報が見つかりません</p>
         </div>
         <Link
           href="/admin/events"
-          className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+          className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
         >
           イベント一覧に戻る
         </Link>
@@ -92,7 +155,7 @@ export default function ControlPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            {eventName ? `${eventName} - 画面制御` : "画面制御"}
+            {data.eventName} - 画面制御
           </h1>
           <p className="mt-2 text-gray-600">
             リアルタイムでクイズの進行状況を制御します
@@ -101,12 +164,16 @@ export default function ControlPage() {
       </div>
 
       {/* 制御パネル */}
-      <QuizControlPanel eventId={parseInt(eventId)} />
+      <QuizControlPanel
+        eventId={eventId}
+        initialState={data.initialState}
+        initialUserCount={data.userCount}
+      />
 
       {/* 戻るリンク */}
       <Link
         href="/admin/events"
-        className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+        className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900"
       >
         イベント一覧に戻る
       </Link>
