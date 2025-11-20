@@ -3,7 +3,7 @@
 import { useQuestionAnswer } from "../_hooks/useQuestionAnswer";
 import { QuestionContent } from "./QuestionContent";
 import { ChoiceButtonGroup, Choice } from "./ChoiceButtonGroup";
-import { useSessionContext } from "../../_context/SessionContext";
+import { EventNameHeader } from "./EventNameHeader";
 
 interface QuestionDisplayProps {
   eventId: number;
@@ -24,7 +24,6 @@ export function QuestionDisplay({
   questionImageUrl,
   choices,
 }: QuestionDisplayProps) {
-  const { eventName } = useSessionContext();
   const {
     selectedChoiceId,
     isSubmitting,
@@ -51,16 +50,7 @@ export function QuestionDisplay({
       }}
     >
       {/* イベント名 */}
-      <div className="mb-4">
-        <h1
-          className="
-          text-2xl font-bold text-white
-          drop-shadow-lg
-        "
-        >
-          {eventName}
-        </h1>
-      </div>
+      <EventNameHeader />
 
       {/* メインコンテンツエリア */}
       <div
