@@ -149,59 +149,42 @@ waiting → /quiz/[eventId]/waiting
 ユーザーが待機画面にアクセスした後、セッションを定期的に更新するフロー：
 
 ```
-User Browser       useSessionHeartbeat    Supabase Client      Realtime Channel    PostgreSQL
-     |                    |                      |                   |                 |
-     |  ページロード      |                      |                   |                 |
-     |=================>|                      |                   |                 |
-     |                    | チャネル作成          |                   |                 |
-     |                    |=================>|                   |                 |
-     |                    |                      | 購読リクエスト      |                 |
-     |                    |                      |==================>|                 |
-     |                    |                      |   SUBSCRIBED      |                 |
-     |                    |                      |<==================|                 |
-     |                    | 接続完了              |                   |                 |
-     |<==================|                      |                   |                 |
-     |                    |                      |                   |                 |
-     | ステータス表示    |                      |                   |                 |
-     | (connected)       |                      |                   |                 |
-     |                    |                      |                   |                 |
-     |  [15秒待機]      |                      |                   |                 |
-     |                    |                      |                   |                 |
-     |                    | last_active_at更新 |                   |                 |
-     |                    |========================================>|                 |
-     |                    |                      |                   |        UPDATE   |
-     |                    |                      |                   |                 |
-     |                    |                 Realtime通知          |                 |
-     |                    |<==================|                 |                 |
-     |                    |                      |                   |                 |
-     | ステータス表示    |                      |                   |                 |
-     | (updating→connected)|                    |                   |                 |
-     |                    |                      |                   |                 |
-     |    [15秒周期で繰り返し]                  |                   |                 |
-     |                    |                      |                   |                 |
-     |  [Admin更新]      |                      |                   |                 |
-     |                    |                      |    quiz_control  |                 |
-     |                    |                      |      UPDATE      |                 |
-     |                    |                      |  <==============|                 |
-     |                    |                      |                   |                 |
-     |                    | 変更通知              |                   |                 |
-     |                    |<==================|                 |                 |
-     |                    | 画面遷移判定          |                   |                 |
-     |                    |                      |                   |                 |
-     | 画面切り替え      |                      |                   |                 |
-     |<==================|                      |                   |                 |
+User Browser       useSessionHeartbeat    Server Action        PostgreSQL
+     |                    |                     |                  |
+     |  ページロード      |                     |                  |
+     |=================>|                     |                  |
+     |                    |                     |                  |
+     |                    | 初回更新実行         |                  |
+     |                    |====================>|                  |
+     |                    |                     | last_active_at  |
+     |                    |                     | 更新              |
+     |                    |                     |=================>|
+     |                    | ステータス: connected                 |
+     |                    |<====|              |                  |
+     |<==================|                     |                  |
+     | (connected)       |                     |                  |
+     |                    |                     |                  |
+     |   [15秒待機]      |                     |                  |
+     |                    |                     |                  |
+     |                    | 定期更新実行         |                  |
+     |                    |====================>|                  |
+     |                    |                     | last_active_at  |
+     |                    |                     | 更新              |
+     |                    |                     |=================>|
+     |                    | ステータス: connected                 |
+     |<==================|                     |                  |
+     |                    |                     |                  |
+     |   [15秒周期で繰り返し]                   |                  |
+     |                    |                     |                  |
 ```
 
 **処理の詳細:**
 
-1. **ページロード**: `WaitingPageContent`（Server Component）が表示され、`SessionHeartbeatManager`が初期化
-2. **チャネル作成**: `useSessionHeartbeat`フックが`quiz_control:{eventId}`チャネルを作成
-3. **購読**: Realtime接続を確立し、SUBSCRIBED ステータスを取得
-4. **初期接続**: ハートビート開始、ステータスは `connected` に更新
-5. **定期更新**: 15秒ごとに`users.last_active_at`をPostgreSQLで更新
-6. **Realtime通知**: PostgreSQL の変更がRealtimeを経由して送信
-7. **Admin操作**: 管理画面から`quiz_control`が更新されても、ハートビートは独立して動作
-8. **画面遷移**: `current_screen`の変更を検知して画面を切り替え
+1. **初期化**: `useSessionHeartbeat`フックで定期更新を開始
+2. **初回更新**: ページロード時に`last_active_at`をServer Actionで更新
+3. **定期更新**: 15秒ごとにServer ActionでPostgreSQLの`last_active_at`を更新
+4. **ステータス通知**: 成功/エラーを`onStatusChange`で通知
+5. **クリーンアップ**: ページ離脱時にタイマーを自動停止
 
 ---
 

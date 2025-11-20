@@ -99,6 +99,22 @@ Database テーブル（`users`, `events`, `periods`, `questions`, `choices` な
 1. **SQL Editor** → **Migrations** をクリック
 2. `20251023_complete_rls_implementation.sql` が実行されていることを確認
 
+### 2.3 Realtime 設定（`quiz_control` テーブル）
+
+`quiz_control` テーブルはリアルタイム画面制御に使用されるため、**Realtime を有効化**する必要があります。
+
+**Realtime 設定手順：**
+
+1. Supabase Dashboard にアクセス
+2. **Database** → **Tables** をクリック
+3. `quiz_control` テーブルを選択
+4. **Realtime** セクションで **Enable Realtime** をクリック
+5. 確認画面で **Enable** をクリック
+
+**ローカル開発環境での確認：**
+
+Supabase Studio（http://localhost:54323）で同様の手順で Realtime を有効化できます。
+
 ---
 
 ## 3. ローカル開発環境での確認
@@ -176,7 +192,11 @@ ADMIN_PASSWORD=<secure-password>
 
 Supabase Dashboard → **Storage** → **Policies** で RLS ポリシーが設定されていることを確認
 
-### 4.4 ドメイン設定（CDN 利用の場合）
+### 4.4 Realtime 設定確認
+
+Supabase Dashboard → **Database** → **Tables** → `quiz_control` で **Realtime** が有効化されていることを確認
+
+### 4.5 ドメイン設定（CDN 利用の場合）
 
 将来的に Cloudflare などの CDN を前面に配置する場合は、以下の対応が必要です：
 
@@ -188,7 +208,7 @@ NEXT_PUBLIC_SUPABASE_STORAGE_URL=https://cdn.example.com/storage
 # 詳細は Supabase ドキュメント参照
 ```
 
-### 4.5 デプロイ後のテスト
+### 4.6 デプロイ後のテスト
 
 本番環境デプロイ後は以下をテストしてください：
 
@@ -210,6 +230,11 @@ NEXT_PUBLIC_SUPABASE_STORAGE_URL=https://cdn.example.com/storage
 4. **RLS ポリシーの動作確認**
    - 認証されていないユーザーで画像 URL にアクセス → 表示可能（SELECT ポリシー）
    - 認証されたユーザーで画像アップロード → 成功（INSERT ポリシー）
+
+5. **Realtime の動作確認**
+   - 管理画面で画面制御（例：「問題表示」）を変更
+   - ユーザー側の画面がリアルタイムで更新されることを確認
+   - ブラウザ開発ツール → **Network** → **WebSocket** で接続を確認
 
 ---
 

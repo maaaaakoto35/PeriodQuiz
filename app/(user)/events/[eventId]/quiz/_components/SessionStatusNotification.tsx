@@ -1,20 +1,12 @@
 "use client";
 
+import { useSessionContext } from "../_context/SessionContext";
 import type { SessionHeartbeatStatus } from "@/app/_lib/hooks/useSessionHeartbeat";
-
-interface SessionStatusNotificationProps {
-  status: SessionHeartbeatStatus;
-  error: Error | null;
-}
 
 function getStatusStyle(status: SessionHeartbeatStatus) {
   const styles = {
     connected: {
       dot: "bg-emerald-500",
-      text: "text-slate-700",
-    },
-    updating: {
-      dot: "bg-blue-500",
       text: "text-slate-700",
     },
     error: {
@@ -32,22 +24,19 @@ function getStatusStyle(status: SessionHeartbeatStatus) {
 function getStatusLabel(status: SessionHeartbeatStatus): string {
   const labels = {
     connected: "接続中",
-    updating: "更新中",
     error: "接続エラー",
     idle: "準備中",
   };
   return labels[status] || labels.idle;
 }
 
-export function SessionStatusNotification({
-  status,
-  error,
-}: SessionStatusNotificationProps) {
-  const style = getStatusStyle(status);
-  const label = getStatusLabel(status);
+export function SessionStatusNotification() {
+  const { heartbeatStatus, heartbeatError } = useSessionContext();
+  const style = getStatusStyle(heartbeatStatus);
+  const label = getStatusLabel(heartbeatStatus);
 
   // エラーがある場合はエラー表示優先
-  if (error) {
+  if (heartbeatError) {
     return (
       <div className="fixed bottom-6 right-6 z-50">
         <div className="bg-white rounded-lg p-3 shadow-sm border border-slate-200 max-w-xs">
