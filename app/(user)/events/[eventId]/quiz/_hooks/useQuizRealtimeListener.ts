@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { createClient } from "@/app/_lib/supabase/client";
 import type { QuizScreen } from "@/app/_lib/types/quiz";
 

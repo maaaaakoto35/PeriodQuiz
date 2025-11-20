@@ -15,7 +15,8 @@ const createMockQueryBuilder = () => ({
 
 const createMockSupabase = () => {
   return {
-    from: vi.fn(function (table: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    from: vi.fn(function (_table: string) {
       const queryBuilder = createMockQueryBuilder();
       queryBuilder.select.mockReturnThis();
       queryBuilder.eq.mockReturnThis();

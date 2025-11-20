@@ -1,6 +1,5 @@
 "use client";
 
-import { QuizScreen } from "@/app/_lib/types/quiz";
 import {
   useQuizControlState,
   useQuizControlTransition,
