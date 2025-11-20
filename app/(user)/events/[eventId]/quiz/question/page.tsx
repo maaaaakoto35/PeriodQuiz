@@ -6,7 +6,7 @@ import {
   GetQuestionWithChoicesResult,
 } from "@/app/_lib/actions/user";
 import { getQuizStatus } from "@/app/_lib/actions/user";
-import { QuestionDisplay } from "../_components/QuestionDisplay";
+import { QuestionDisplay } from "./_components/QuestionDisplay";
 import { useSessionContext } from "../_context/SessionContext";
 
 /**

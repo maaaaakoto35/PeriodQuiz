@@ -3,7 +3,7 @@
 import { useQuestionAnswer } from "../_hooks/useQuestionAnswer";
 import { QuestionContent } from "./QuestionContent";
 import { ChoiceButtonGroup, Choice } from "./ChoiceButtonGroup";
-import { useSessionContext } from "../_context/SessionContext";
+import { useSessionContext } from "../../_context/SessionContext";
 
 interface QuestionDisplayProps {
   eventId: number;

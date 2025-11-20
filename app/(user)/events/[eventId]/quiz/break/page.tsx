@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { validateSession } from "@/app/_lib/actions/user";
-import { UnimplementedScreen } from "../waiting/_components/UnimplementedScreen";
+import { UnimplementedScreen } from "../_components/UnimplementedScreen";
 
 type PageProps = {
   params: Promise<{
