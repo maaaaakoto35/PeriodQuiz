@@ -16,3 +16,12 @@ export { getSessionErrorReason } from './getSessionErrorReason';
 export type { SessionErrorReason } from './getSessionErrorReason';
 
 export { updateSessionHeartbeat } from './updateSessionHeartbeat';
+
+export { getQuestionWithChoices } from './getQuestionWithChoices';
+export type { GetQuestionWithChoicesInput, GetQuestionWithChoicesResult } from './getQuestionWithChoices';
+
+export { submitAnswer } from './submitAnswer';
+export type { SubmitAnswerInput, SubmitAnswerResult } from './submitAnswer';
+
+export { getQuizStatus } from './getQuizStatus';
+export type { GetQuizStatusResult } from './getQuizStatus';
