@@ -1,18 +1,18 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import AnswerPage from './page';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import AnswerPage from "./page";
 
 // Mock modules
-vi.mock('@/app/_lib/actions/user', () => ({
+vi.mock("@/app/_lib/actions/user", () => ({
   validateSession: vi.fn(),
   getAnswerResult: vi.fn(),
 }));
 
-vi.mock('next/navigation', () => ({
+vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-vi.mock('./_components/AnswerDisplay', () => ({
+vi.mock("./_components/AnswerDisplay", () => ({
   AnswerDisplay: ({ questionText, userAnswer }: any) => (
     <div data-testid="answer-display">
       <p data-testid="question-text">{questionText}</p>
@@ -27,20 +27,20 @@ vi.mock('./_components/AnswerDisplay', () => ({
   ),
 }));
 
-import { validateSession, getAnswerResult } from '@/app/_lib/actions/user';
-import { redirect } from 'next/navigation';
+import { validateSession, getAnswerResult } from "@/app/_lib/actions/user";
+import { redirect } from "next/navigation";
 
-describe('AnswerPage', () => {
+describe("AnswerPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('成功ケース', () => {
-    it('セッションが有効な場合、AnswerDisplayが表示される', async () => {
+  describe("成功ケース", () => {
+    it("セッションが有効な場合、AnswerDisplayが表示される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 1,
         },
       } as any);
@@ -48,12 +48,12 @@ describe('AnswerPage', () => {
       vi.mocked(getAnswerResult).mockResolvedValue({
         success: true,
         data: {
-          questionText: 'What is 2 + 2?',
+          questionText: "What is 2 + 2?",
           questionImageUrl: null,
           choices: [
             {
               id: 1,
-              text: '4',
+              text: "4",
               imageUrl: null,
               orderNum: 1,
               isCorrect: true,
@@ -61,7 +61,7 @@ describe('AnswerPage', () => {
             },
             {
               id: 2,
-              text: '5',
+              text: "5",
               imageUrl: null,
               orderNum: 2,
               isCorrect: false,
@@ -79,21 +79,21 @@ describe('AnswerPage', () => {
       const { container } = render(
         await AnswerPage({
           params: Promise.resolve({
-            eventId: '1',
+            eventId: "1",
           }),
         })
       );
 
       expect(container).toBeTruthy();
-      expect(screen.getByTestId('answer-display')).toBeTruthy();
-      expect(screen.getByTestId('question-text')).toBeTruthy();
+      expect(screen.getByTestId("answer-display")).toBeTruthy();
+      expect(screen.getByTestId("question-text")).toBeTruthy();
     });
 
-    it('ユーザーが回答している場合、回答情報が表示される', async () => {
+    it("ユーザーが回答している場合、回答情報が表示される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 1,
         },
       } as any);
@@ -101,7 +101,7 @@ describe('AnswerPage', () => {
       vi.mocked(getAnswerResult).mockResolvedValue({
         success: true,
         data: {
-          questionText: 'What is 2 + 2?',
+          questionText: "What is 2 + 2?",
           questionImageUrl: null,
           choices: [],
           userAnswer: {
@@ -115,19 +115,19 @@ describe('AnswerPage', () => {
       render(
         await AnswerPage({
           params: Promise.resolve({
-            eventId: '1',
+            eventId: "1",
           }),
         })
       );
 
-      expect(screen.getByTestId('user-answer')).toBeTruthy();
+      expect(screen.getByTestId("user-answer")).toBeTruthy();
     });
 
-    it('ユーザーが未回答の場合、未回答表示が表示される', async () => {
+    it("ユーザーが未回答の場合、未回答表示が表示される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 1,
         },
       } as any);
@@ -135,7 +135,7 @@ describe('AnswerPage', () => {
       vi.mocked(getAnswerResult).mockResolvedValue({
         success: true,
         data: {
-          questionText: 'What is 2 + 2?',
+          questionText: "What is 2 + 2?",
           questionImageUrl: null,
           choices: [],
           userAnswer: null,
@@ -145,25 +145,25 @@ describe('AnswerPage', () => {
       render(
         await AnswerPage({
           params: Promise.resolve({
-            eventId: '1',
+            eventId: "1",
           }),
         })
       );
 
-      expect(screen.getByTestId('no-answer')).toBeTruthy();
+      expect(screen.getByTestId("no-answer")).toBeTruthy();
     });
   });
 
-  describe('エラーケース', () => {
-    it('無効なイベントIDの場合、エラーがスローされる', async () => {
+  describe("エラーケース", () => {
+    it("無効なイベントIDの場合、エラーがスローされる", async () => {
       const consoleErrorSpy = vi
-        .spyOn(console, 'error')
+        .spyOn(console, "error")
         .mockImplementation(() => {});
 
       try {
         await AnswerPage({
           params: Promise.resolve({
-            eventId: 'invalid-id',
+            eventId: "invalid-id",
           }),
         });
       } catch (error) {
@@ -173,70 +173,70 @@ describe('AnswerPage', () => {
       consoleErrorSpy.mockRestore();
     });
 
-    it('セッションが見つからない場合、リダイレクトされる', async () => {
+    it("セッションが見つからない場合、リダイレクトされる", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: false,
-        error: 'セッションが見つかりません',
+        error: "セッションが見つかりません",
       } as any);
 
       await AnswerPage({
         params: Promise.resolve({
-          eventId: '1',
+          eventId: "1",
         }),
       });
 
-      expect(redirect).toHaveBeenCalledWith('/events/1');
+      expect(redirect).toHaveBeenCalledWith("/events/1");
     });
 
-    it('セッションのイベントIDが一致しない場合、リダイレクトされる', async () => {
+    it("セッションのイベントIDが一致しない場合、リダイレクトされる", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 2, // ページのeventIdと異なる
         },
       } as any);
 
       await AnswerPage({
         params: Promise.resolve({
-          eventId: '1',
+          eventId: "1",
         }),
       });
 
-      expect(redirect).toHaveBeenCalledWith('/events/1');
+      expect(redirect).toHaveBeenCalledWith("/events/1");
     });
 
-    it('getAnswerResultが失敗した場合、エラーメッセージが表示される', async () => {
+    it("getAnswerResultが失敗した場合、エラーメッセージが表示される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 1,
         },
       } as any);
 
       vi.mocked(getAnswerResult).mockResolvedValue({
         success: false,
-        error: '問題が見つかりません',
+        error: "問題が見つかりません",
       } as any);
 
       const { container } = render(
         await AnswerPage({
           params: Promise.resolve({
-            eventId: '1',
+            eventId: "1",
           }),
         })
       );
 
-      expect(screen.getByText('エラー')).toBeTruthy();
-      expect(screen.getByText('問題が見つかりません')).toBeTruthy();
+      expect(screen.getByText("エラー")).toBeTruthy();
+      expect(screen.getByText("問題が見つかりません")).toBeTruthy();
     });
 
-    it('getAnswerResultが失敗し、エラーメッセージがない場合、デフォルトメッセージが表示される', async () => {
+    it("getAnswerResultが失敗し、エラーメッセージがない場合、デフォルトメッセージが表示される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 1,
         },
       } as any);
@@ -249,22 +249,22 @@ describe('AnswerPage', () => {
       render(
         await AnswerPage({
           params: Promise.resolve({
-            eventId: '1',
+            eventId: "1",
           }),
         })
       );
 
-      expect(screen.getByText('エラー')).toBeTruthy();
-      expect(screen.getByText('回答結果の読み込みに失敗しました')).toBeTruthy();
+      expect(screen.getByText("エラー")).toBeTruthy();
+      expect(screen.getByText("回答結果の読み込みに失敗しました")).toBeTruthy();
     });
   });
 
-  describe('パラメータ処理', () => {
-    it('文字列のイベントIDが数値に変換される', async () => {
+  describe("パラメータ処理", () => {
+    it("文字列のイベントIDが数値に変換される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 123,
         },
       } as any);
@@ -272,7 +272,7 @@ describe('AnswerPage', () => {
       vi.mocked(getAnswerResult).mockResolvedValue({
         success: true,
         data: {
-          questionText: 'Question?',
+          questionText: "Question?",
           questionImageUrl: null,
           choices: [],
           userAnswer: null,
@@ -281,7 +281,7 @@ describe('AnswerPage', () => {
 
       await AnswerPage({
         params: Promise.resolve({
-          eventId: '123',
+          eventId: "123",
         }),
       });
 
@@ -289,11 +289,11 @@ describe('AnswerPage', () => {
       expect(getAnswerResult).toHaveBeenCalledWith(123);
     });
 
-    it('ゼロ埋めされたイベントIDも正しく処理される', async () => {
+    it("ゼロ埋めされたイベントIDも正しく処理される", async () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 5,
         },
       } as any);
@@ -301,7 +301,7 @@ describe('AnswerPage', () => {
       vi.mocked(getAnswerResult).mockResolvedValue({
         success: true,
         data: {
-          questionText: 'Question?',
+          questionText: "Question?",
           questionImageUrl: null,
           choices: [],
           userAnswer: null,
@@ -310,7 +310,7 @@ describe('AnswerPage', () => {
 
       await AnswerPage({
         params: Promise.resolve({
-          eventId: '00005',
+          eventId: "00005",
         }),
       });
 
@@ -318,15 +318,15 @@ describe('AnswerPage', () => {
     });
   });
 
-  describe('AnswerDisplayへのプロップ', () => {
-    it('すべてのプロップが正しく渡される', async () => {
+  describe("AnswerDisplayへのプロップ", () => {
+    it("すべてのプロップが正しく渡される", async () => {
       const mockData = {
-        questionText: 'What is 2 + 2?',
-        questionImageUrl: 'https://example.com/image.jpg',
+        questionText: "What is 2 + 2?",
+        questionImageUrl: "https://example.com/image.jpg",
         choices: [
           {
             id: 1,
-            text: '4',
+            text: "4",
             imageUrl: null,
             orderNum: 1,
             isCorrect: true,
@@ -343,7 +343,7 @@ describe('AnswerPage', () => {
       vi.mocked(validateSession).mockResolvedValue({
         valid: true,
         user: {
-          id: 'test-user-id',
+          id: "test-user-id",
           event_id: 1,
         },
       } as any);
@@ -356,12 +356,12 @@ describe('AnswerPage', () => {
       render(
         await AnswerPage({
           params: Promise.resolve({
-            eventId: '1',
+            eventId: "1",
           }),
         })
       );
 
-      expect(screen.getByTestId('question-text')).toHaveTextContent(
+      expect(screen.getByTestId("question-text")).toHaveTextContent(
         mockData.questionText
       );
     });
