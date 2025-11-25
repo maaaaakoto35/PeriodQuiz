@@ -7,10 +7,12 @@ interface ChoiceButtonProps {
   isSelected: boolean;
   isDisabled: boolean;
   onSelect: (choiceId: number) => void;
+  buttonNumber: number; // マップ内のindex（1-4）
   // answer画面用（オプション）
   isCorrect?: boolean;
   userSelected?: boolean;
   showCorrectness?: boolean;
+  selectionCount?: number; // answer画面：この選択肢を選んだ人数
 }
 
 /**
@@ -26,13 +28,12 @@ export function ChoiceButton({
   isSelected,
   isDisabled,
   onSelect,
+  buttonNumber,
   isCorrect,
   userSelected,
   showCorrectness,
+  selectionCount,
 }: ChoiceButtonProps) {
-  // ID をボタン番号に変換 (1, 2, 3, 4)
-  const buttonNumber = id % 4 || 4;
-
   // 正解/不正解の背景色を決定
   let borderColor = isSelected
     ? "border-blue-500 bg-gradient-to-br from-blue-100 to-blue-50 shadow-lg scale-95"
@@ -138,6 +139,20 @@ export function ChoiceButton({
         "
         >
           不正解
+        </div>
+      )}
+
+      {/* 選択数表示（answer画面用） */}
+      {showCorrectness && selectionCount !== undefined && (
+        <div
+          className="
+          absolute bottom-2 left-2
+          px-2 py-1 rounded-full
+          bg-gray-700 text-white
+          text-xs font-bold
+        "
+        >
+          {selectionCount}人
         </div>
       )}
 

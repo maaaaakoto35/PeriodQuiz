@@ -1,7 +1,6 @@
 'use server';
 
 import { createClient } from '@/app/_lib/supabase/server';
-import { createAdminClient } from '@/app/_lib/supabase/server-admin';
 import { validateSession } from '../validateSession';
 import { type Choice } from '@/app/(user)/events/[eventId]/quiz/_components';
 
@@ -104,6 +103,18 @@ export async function getAnswerResult(
       .eq('question_id', questionId)
       .single();
 
+    // 各選択肢の選択人数を取得
+    const { data: selectionCounts } = await supabase
+      .from('answers')
+      .select('choice_id')
+      .eq('question_id', questionId);
+
+    const selectionCountMap = new Map<number, number>();
+    selectionCounts?.forEach((a) => {
+      const count = selectionCountMap.get(a.choice_id) || 0;
+      selectionCountMap.set(a.choice_id, count + 1);
+    });
+
     return {
       success: true,
       data: {
@@ -115,6 +126,7 @@ export async function getAnswerResult(
           imageUrl: c.image_url,
           orderNum: c.order_num,
           isCorrect: c.is_correct,
+          selectionCount: selectionCountMap.get(c.id) || 0,
         })),
         userAnswer: answer
           ? {

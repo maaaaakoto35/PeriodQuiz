@@ -6,6 +6,7 @@ export interface Choice {
   imageUrl: string | null;
   orderNum: number;
   isCorrect?: boolean;
+  selectionCount?: number; // answer画面：この選択肢を選んだ人数
 }
 
 interface ChoiceButtonGroupProps {
@@ -36,12 +37,13 @@ export function ChoiceButtonGroup({
     <div className="w-full grid grid-cols-2 gap-4">
       {choices
         .sort((a, b) => a.orderNum - b.orderNum)
-        .map((choice) => (
+        .map((choice, index) => (
           <ChoiceButton
             key={choice.id}
             id={choice.id}
             text={choice.text}
             imageUrl={choice.imageUrl}
+            buttonNumber={index + 1}
             isSelected={
               showCorrectness
                 ? userSelectedChoiceId === choice.id
@@ -55,6 +57,7 @@ export function ChoiceButtonGroup({
               showCorrectness ? userSelectedChoiceId === choice.id : undefined
             }
             showCorrectness={showCorrectness}
+            selectionCount={showCorrectness ? choice.selectionCount : undefined}
           />
         ))}
     </div>
