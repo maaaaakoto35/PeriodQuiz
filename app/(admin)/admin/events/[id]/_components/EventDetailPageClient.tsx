@@ -9,6 +9,7 @@ import {
   type EventRecord,
 } from "@/app/_lib/actions/admin/events";
 import { EventForm } from "../../_components/EventForm";
+import { BreakImagesSection } from "./BreakImagesSection";
 
 interface EventDetailPageClientProps {
   id: string;
@@ -123,6 +124,8 @@ export function EventDetailPageClient({ id }: EventDetailPageClientProps) {
           </div>
         </div>
       </div>
+
+      <BreakImagesSection eventId={Number(id)} />
 
       <Link
         href="/admin/events"
