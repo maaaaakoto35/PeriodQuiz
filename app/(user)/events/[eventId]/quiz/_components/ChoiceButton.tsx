@@ -7,11 +7,17 @@ interface ChoiceButtonProps {
   isSelected: boolean;
   isDisabled: boolean;
   onSelect: (choiceId: number) => void;
+  // answer画面用（オプション）
+  isCorrect?: boolean;
+  userSelected?: boolean;
+  showCorrectness?: boolean;
 }
 
 /**
  * 個別の選択肢ボタン
  * テキスト＋画像を表示し、選択/非選択状態を管理
+ *
+ * answer画面では正解/不正解を表示可能
  */
 export function ChoiceButton({
   id,
@@ -20,9 +26,34 @@ export function ChoiceButton({
   isSelected,
   isDisabled,
   onSelect,
+  isCorrect,
+  userSelected,
+  showCorrectness,
 }: ChoiceButtonProps) {
   // ID をボタン番号に変換 (1, 2, 3, 4)
   const buttonNumber = id % 4 || 4;
+
+  // 正解/不正解の背景色を決定
+  let borderColor = isSelected
+    ? "border-blue-500 bg-gradient-to-br from-blue-100 to-blue-50 shadow-lg scale-95"
+    : "border-gray-400 bg-gradient-to-br from-gray-50 to-white hover:border-gray-500 hover:shadow-md";
+
+  // answer画面で正解/不正解を表示する場合
+  if (showCorrectness) {
+    if (userSelected && isCorrect) {
+      // ユーザーが選択した選択肢が正解
+      borderColor =
+        "border-green-500 bg-gradient-to-br from-green-100 to-green-50 shadow-lg";
+    } else if (userSelected && !isCorrect) {
+      // ユーザーが選択した選択肢が不正解
+      borderColor =
+        "border-red-500 bg-gradient-to-br from-red-100 to-red-50 shadow-lg";
+    } else if (isCorrect && !userSelected) {
+      // ユーザーが選択していない正解
+      borderColor =
+        "border-green-500 bg-gradient-to-br from-green-50 to-green-100 shadow-md";
+    }
+  }
 
   return (
     <button
@@ -36,11 +67,7 @@ export function ChoiceButton({
         transition-all duration-200
         relative overflow-hidden
         group
-        ${
-          isSelected
-            ? "border-blue-500 bg-gradient-to-br from-blue-100 to-blue-50 shadow-lg scale-95"
-            : "border-gray-400 bg-gradient-to-br from-gray-50 to-white hover:border-gray-500 hover:shadow-md"
-        }
+        ${borderColor}
         ${
           isDisabled
             ? "opacity-50 cursor-not-allowed"
@@ -72,6 +99,47 @@ export function ChoiceButton({
       >
         {buttonNumber}
       </div>
+
+      {/* 正解/不正解バッジ（answer画面用） */}
+      {showCorrectness && isCorrect && !userSelected && (
+        <div
+          className="
+          absolute top-2 left-2
+          w-6 h-6 rounded-full
+          flex items-center justify-center
+          text-xs font-bold text-white
+          bg-green-500 shadow-md
+        "
+        >
+          ✓
+        </div>
+      )}
+
+      {showCorrectness && userSelected && isCorrect && (
+        <div
+          className="
+          absolute bottom-2 right-2
+          px-2 py-1 rounded-full
+          bg-green-500 text-white
+          text-xs font-bold
+        "
+        >
+          正解
+        </div>
+      )}
+
+      {showCorrectness && userSelected && !isCorrect && (
+        <div
+          className="
+          absolute bottom-2 right-2
+          px-2 py-1 rounded-full
+          bg-red-500 text-white
+          text-xs font-bold
+        "
+        >
+          不正解
+        </div>
+      )}
 
       {/* 画像またはテキスト */}
       {imageUrl ? (

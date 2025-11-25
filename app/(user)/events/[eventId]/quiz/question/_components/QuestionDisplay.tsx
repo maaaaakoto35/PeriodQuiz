@@ -1,9 +1,12 @@
 "use client";
 
 import { useQuestionAnswer } from "../_hooks/useQuestionAnswer";
-import { QuestionContent } from "./QuestionContent";
-import { ChoiceButtonGroup, Choice } from "./ChoiceButtonGroup";
-import { EventNameHeader } from "./EventNameHeader";
+import {
+  EventNameHeader,
+  QuestionContent,
+  ChoiceButtonGroup,
+  type Choice,
+} from "../../_components";
 
 interface QuestionDisplayProps {
   eventId: number;

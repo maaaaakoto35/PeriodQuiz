@@ -25,3 +25,6 @@ export type { SubmitAnswerInput, SubmitAnswerResult } from './submitAnswer';
 
 export { getQuizStatus } from './getQuizStatus';
 export type { GetQuizStatusResult } from './getQuizStatus';
+
+export { getAnswerResult } from './getAnswerResult';
+export type { GetAnswerResultResult } from './getAnswerResult';

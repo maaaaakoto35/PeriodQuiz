@@ -1,6 +1,6 @@
 "use client";
 
-import { useSessionContext } from "../../_context/SessionContext";
+import { useSessionContext } from "../_context/SessionContext";
 
 /**
  * イベント名ヘッダーコンポーネント
