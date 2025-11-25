@@ -20,7 +20,7 @@ export function useQuizImageUpload(): UseQuizImageUploadReturn {
     quizId?: number | string
   ): Promise<string | null> => {
     try {
-      const result = await uploadQuizImage(file, type, quizId);
+      const result = await uploadQuizImage(file, type, undefined, quizId ? String(quizId) : undefined);
       if (!result.success) {
         throw new Error(result.error || '画像のアップロードに失敗しました');
       }

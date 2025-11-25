@@ -186,6 +186,38 @@ export type Database = {
         }
         Relationships: []
       }
+      event_break_images: {
+        Row: {
+          created_at: string
+          id: string
+          event_id: number
+          image_url: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          event_id: number
+          image_url: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          event_id?: number
+          image_url?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_break_images_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       period_questions: {
         Row: {
           created_at: string

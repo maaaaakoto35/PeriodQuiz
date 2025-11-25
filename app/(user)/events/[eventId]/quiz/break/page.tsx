@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { validateSession } from "@/app/_lib/actions/user";
-import { UnimplementedScreen } from "../_components/UnimplementedScreen";
+import { BreakScreen } from "./_components/BreakScreen";
 
 type PageProps = {
   params: Promise<{
@@ -8,7 +8,6 @@ type PageProps = {
   }>;
 };
 
-// TODO: US-003-04で実装する
 export default async function BreakPage({ params }: PageProps) {
   const { eventId: eventIdStr } = await params;
   const eventId = parseInt(eventIdStr, 10);
@@ -24,25 +23,5 @@ export default async function BreakPage({ params }: PageProps) {
     redirect(`/events/${eventId}`);
   }
 
-  return (
-    <main
-      className="
-      flex flex-col items-center justify-center
-      min-h-screen
-      p-4
-      bg-gradient-to-br from-blue-50 to-indigo-100
-    "
-    >
-      <div
-        className="
-        w-full max-w-md
-        p-8 space-y-6
-        bg-white rounded-lg shadow-lg
-        text-center
-      "
-      >
-        <UnimplementedScreen currentScreen="break" />
-      </div>
-    </main>
-  );
+  return <BreakScreen eventId={eventId} />;
 }

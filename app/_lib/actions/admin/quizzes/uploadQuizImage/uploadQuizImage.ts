@@ -9,12 +9,14 @@ import { uploadQuizImageSchema } from '../validation';
  * 
  * @param file - アップロードするファイル
  * @param type - 画像タイプ ("question" | "choice")
- * @param quizId - 編集時のクイズID（任意）
+ * @param filePath - ファイルパス（任意。指定時はこれを使用）
+ * @param quizId - 編集時のクイズID（任意。filePathが未指定時に使用）
  * @returns { success, imageUrl?, error? }
  */
 export async function uploadQuizImage(
   file: File,
   type: 'question' | 'choice',
+  filePath?: string,
   quizId?: number | string
 ): Promise<{ success: boolean; imageUrl?: string; error?: string }> {
   try {
@@ -50,17 +52,20 @@ export async function uploadQuizImage(
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // 5. ファイルパスを生成（タイムスタンプで一意性を確保）
-    const timestamp = Date.now();
-    const fileExtension = file.name.split('.').pop() || 'jpg';
-    const filePath = `${type}s/${quizId || 'temp'}-${timestamp}.${fileExtension}`;
+    // 5. ファイルパスを生成（filePathが指定されていない場合）
+    let finalFilePath: string = filePath || '';
+    if (!finalFilePath) {
+      const timestamp = Date.now();
+      const fileExtension = file.name.split('.').pop() || 'jpg';
+      finalFilePath = `${type}s/${quizId || 'temp'}-${timestamp}.${fileExtension}`;
+    }
 
     // 6. Supabase Storage にアップロード
     const supabase = createAdminClient();
 
     const { error: uploadError } = await supabase.storage
-      .from('quiz-images')
-      .upload(filePath, buffer, {
+      .from('images')
+      .upload(finalFilePath, buffer, {
         contentType: file.type,
         upsert: false,
       });
@@ -75,8 +80,8 @@ export async function uploadQuizImage(
 
     // 7. 公開URLを取得
     const { data } = supabase.storage
-      .from('quiz-images')
-      .getPublicUrl(filePath);
+      .from('images')
+      .getPublicUrl(finalFilePath);
 
     if (!data?.publicUrl) {
       return {
