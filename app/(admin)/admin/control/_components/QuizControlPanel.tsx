@@ -69,7 +69,19 @@ export function QuizControlPanel({
 
   return (
     <div className="space-y-6">
-      <CurrentStateDisplay state={state} userCount={userCount} />
+      <CurrentStateDisplay
+        state={state}
+        userCount={userCount}
+        eventId={eventId}
+        onReset={() => {
+          setState({
+            currentScreen: "waiting",
+            currentPeriodId: null,
+            currentQuestionId: null,
+          });
+        }}
+        isUpdating={isUpdating}
+      />
 
       {error && <ErrorAlert message={error} />}
 
