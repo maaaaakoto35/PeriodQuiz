@@ -28,3 +28,6 @@ export type { GetQuizStatusResult } from './getQuizStatus';
 
 export { getAnswerResult } from './getAnswerResult';
 export type { GetAnswerResultResult } from './getAnswerResult';
+
+export { getPeriodResults } from './getPeriodResults';
+export type { GetPeriodResultsResult, PeriodResultData, RankingEntry, UserResult } from './getPeriodResults';

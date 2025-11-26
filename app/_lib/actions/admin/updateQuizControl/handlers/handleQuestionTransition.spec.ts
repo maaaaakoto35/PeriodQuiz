@@ -6,6 +6,7 @@ import type { Database } from '@/app/_lib/types/database';
 vi.mock('../utils', () => ({
   getNextQuestion: vi.fn(),
   createQuestionDisplay: vi.fn(),
+  getNextPeriod: vi.fn(),
 }));
 
 describe('handleQuestionTransition', () => {
@@ -254,6 +255,7 @@ describe('handleQuestionTransition', () => {
     });
 
     it('次のピリオドの第1問を取得して遷移する', async () => {
+      vi.mocked(utils.getNextPeriod).mockResolvedValue(3);
       vi.mocked(utils.getNextQuestion).mockResolvedValue(20);
       vi.mocked(utils.createQuestionDisplay).mockResolvedValue(undefined);
 
@@ -265,20 +267,26 @@ describe('handleQuestionTransition', () => {
 
       expect(result).toEqual({
         success: true,
-        currentPeriodId: 2,
+        currentPeriodId: 3,
         currentQuestionId: 20,
       });
 
-      expect(vi.mocked(utils.getNextQuestion)).toHaveBeenCalledWith(
+      expect(vi.mocked(utils.getNextPeriod)).toHaveBeenCalledWith(
         mockSupabase,
         2,
+        1
+      );
+
+      expect(vi.mocked(utils.getNextQuestion)).toHaveBeenCalledWith(
+        mockSupabase,
+        3,
         null
       );
 
       expect(vi.mocked(utils.createQuestionDisplay)).toHaveBeenCalledWith(
         mockSupabase,
         20,
-        2
+        3
       );
     });
 
@@ -293,11 +301,12 @@ describe('handleQuestionTransition', () => {
 
       expect(result).toEqual({
         success: false,
-        error: '次のピリオドが見つかりません。最終問題を終えた可能性があります',
+        error: 'ピリオド情報が見つかりません',
       });
     });
 
     it('次のピリオドに問題がない場合、エラーを返す', async () => {
+      vi.mocked(utils.getNextPeriod).mockResolvedValue(3);
       vi.mocked(utils.getNextQuestion).mockResolvedValue(null);
 
       const result = await handleQuestionTransition(
