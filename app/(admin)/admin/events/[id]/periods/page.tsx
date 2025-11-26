@@ -38,8 +38,8 @@ export default function PeriodsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">ピリオド管理</h1>
-          <p className="mt-2 text-gray-600">イベント内のピリオドを管理します</p>
+          <h1 className="text-2xl font-bold text-gray-900">クイズ作成</h1>
+          <p className="mt-2 text-gray-600">ピリオドごとにクイズを作成します</p>
         </div>
         <Link
           href={`/admin/events/${eventId}/periods/new`}
@@ -87,7 +87,7 @@ export default function PeriodsPage() {
       )}
 
       <Link
-        href={`/admin/events/${eventId}`}
+        href="/admin/events/"
         className="
           inline-flex items-center justify-center
           rounded-md px-4 py-2

@@ -19,7 +19,6 @@ interface CurrentStateDisplayProps {
  * 表示内容:
  * - 現在の画面状態
  * - 参加者数
- * - 正答ユーザー数（将来実装）
  * - 現在のピリオド名
  * - 現在の質問テキスト
  * - リセットボタン（ヘッダー右側）
@@ -91,13 +90,6 @@ export function CurrentStateDisplay({
             参加者数
           </p>
           <p className="mt-2 text-2xl font-bold text-green-900">{userCount}</p>
-        </div>
-
-        <div className="rounded-lg bg-purple-50 p-4">
-          <p className="text-xs font-semibold uppercase text-purple-600">
-            正答ユーザー数(未実装)
-          </p>
-          <p className="mt-2 text-2xl font-bold text-purple-900">{userCount}</p>
         </div>
       </div>
 

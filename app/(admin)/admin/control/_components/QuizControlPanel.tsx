@@ -3,11 +3,13 @@
 import {
   useQuizControlState,
   useQuizControlTransition,
+  usePolledRankings,
   type QuizControlState,
 } from "../_hooks";
 import { CurrentStateDisplay } from "./CurrentStateDisplay";
 import { TransitionButtons } from "./TransitionButtons";
 import { ErrorAlert } from "./ErrorAlert";
+import { RankingsPanel } from "./RankingsPanel";
 
 interface QuizControlPanelProps {
   eventId: number;
@@ -52,6 +54,13 @@ export function QuizControlPanel({
     }
   );
 
+  // ランキング購読フック（currentPeriodIdが設定されている場合のみ有効）
+  const { rankings, isLoading: rankingsLoading } = usePolledRankings({
+    eventId,
+    periodId: state?.currentPeriodId || 0,
+    enabled: !!state?.currentPeriodId,
+  });
+
   // 初期化時に initialUserCount をセット
   if (userCount === 0 && initialUserCount > 0) {
     setUserCount(initialUserCount);
@@ -90,6 +99,16 @@ export function QuizControlPanel({
         possibleTransitions={possibleTransitions}
         isUpdating={isUpdating}
       />
+
+      {/* ランキング表示セクション */}
+      {state.currentPeriodId && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            進行状況確認
+          </h2>
+          <RankingsPanel rankings={rankings} isLoading={rankingsLoading} />
+        </div>
+      )}
     </div>
   );
 }

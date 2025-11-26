@@ -1,0 +1,1 @@
+export { getRankings } from './getRankings';

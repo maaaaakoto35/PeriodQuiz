@@ -41,9 +41,6 @@ export function PeriodListItem({
             #{period.order_num}
           </span>
           <h3 className="text-lg font-medium text-gray-900">{period.name}</h3>
-          <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
-            {period.status}
-          </span>
         </div>
       </div>
 
@@ -125,7 +122,7 @@ export function PeriodListItem({
             transition-colors
           "
         >
-          クイズ
+          クイズ作成
         </Link>
 
         {/* 削除ボタン */}

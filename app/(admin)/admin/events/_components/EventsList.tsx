@@ -138,7 +138,7 @@ export function EventsList() {
                           transition-colors
                         "
                       >
-                        ピリオド
+                        クイズ作成
                       </Link>
                       <Link
                         href={`/admin/control?eventId=${event.id}`}
