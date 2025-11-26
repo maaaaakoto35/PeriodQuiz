@@ -6,3 +6,4 @@ export {
   useQuizControlTransition,
   type UseQuizControlTransitionParams,
 } from './useQuizControlTransition';
+export { usePolledRankings } from './usePolledRankings';
