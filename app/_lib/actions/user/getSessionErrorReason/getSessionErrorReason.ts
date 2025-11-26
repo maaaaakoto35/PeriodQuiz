@@ -5,7 +5,7 @@ import { createClient } from '@/app/_lib/supabase/server';
 /**
  * セッションエラーの理由
  */
-export type SessionErrorReason = 'quiz_started' | 'session_expired' | null;
+export type SessionErrorReason = 'session_expired' | null;
 
 /**
  * セッションが無効な理由を判定する
@@ -18,21 +18,16 @@ export async function getSessionErrorReason(
 ): Promise<SessionErrorReason> {
   const supabase = await createClient();
 
-  // クイズ進行状態を取得
-  const { data: quizControl, error: controlError } = await supabase
-    .from('quiz_control')
-    .select('current_screen')
-    .eq('event_id', eventId)
+  // イベント情報を確認
+  const { data: event, error: eventError } = await supabase
+    .from('events')
+    .select('id')
+    .eq('id', eventId)
     .maybeSingle();
 
-  if (controlError) {
-    // エラーが発生した場合はsession_expiredと扱う
+  if (eventError || !event) {
+    // イベントが見つからない場合はsession_expiredと扱う
     return 'session_expired';
-  }
-
-  // quiz_controlが存在し、waiting以外の画面の場合
-  if (quizControl && quizControl.current_screen !== 'waiting') {
-    return 'quiz_started';
   }
 
   return null;

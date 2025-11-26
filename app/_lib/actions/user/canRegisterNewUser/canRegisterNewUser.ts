@@ -34,27 +34,5 @@ export async function canRegisterNewUser(
     };
   }
 
-  // クイズ進行状態を取得
-  const { data: quizControl, error: controlError } = await supabase
-    .from('quiz_control')
-    .select('current_screen')
-    .eq('event_id', eventId)
-    .maybeSingle();
-
-  if (controlError) {
-    return {
-      canRegister: false,
-      reason: 'システムエラーが発生しました',
-    };
-  }
-
-  // quiz_controlが存在し、waiting以外の画面の場合は登録不可
-  if (quizControl && quizControl.current_screen !== 'waiting') {
-    return {
-      canRegister: false,
-      reason: 'クイズが既に開始されています',
-    };
-  }
-
   return { canRegister: true };
 }

@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   useQuizControlState,
   useQuizControlTransition,
   usePolledRankings,
+  useRealtimeUserCount,
   type QuizControlState,
 } from "../_hooks";
 import { CurrentStateDisplay } from "./CurrentStateDisplay";
@@ -23,7 +25,8 @@ interface QuizControlPanelProps {
  * 責務:
  * 1. 状態管理（useQuizControlState）
  * 2. 遷移ロジック（useQuizControlTransition）
- * 3. UIコンポーネント組み合わせ
+ * 3. リアルタイム参加者数取得（useRealtimeUserCount）
+ * 4. UIコンポーネント組み合わせ
  *
  * useEffect なし（初期ロードはサーバーで実行）
  * 状態管理と遷移ロジックは custom hooks に委譲
@@ -54,6 +57,12 @@ export function QuizControlPanel({
     }
   );
 
+  // リアルタイムユーザー数取得フック
+  const { userCount: realtimeUserCount } = useRealtimeUserCount({
+    eventId,
+    initialCount: initialUserCount,
+  });
+
   // ランキング購読フック（currentPeriodIdが設定されている場合のみ有効）
   const { rankings, isLoading: rankingsLoading } = usePolledRankings({
     eventId,
@@ -61,10 +70,10 @@ export function QuizControlPanel({
     enabled: !!state?.currentPeriodId,
   });
 
-  // 初期化時に initialUserCount をセット
-  if (userCount === 0 && initialUserCount > 0) {
-    setUserCount(initialUserCount);
-  }
+  // リアルタイム参加者数が更新されたときに状態を更新
+  useEffect(() => {
+    setUserCount(realtimeUserCount);
+  }, [realtimeUserCount, setUserCount]);
 
   if (!state) {
     return (
