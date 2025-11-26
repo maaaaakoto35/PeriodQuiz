@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { validateSession } from "@/app/_lib/actions/user";
-import { UnimplementedScreen } from "../_components/UnimplementedScreen";
+import { validateSession, getFinalResults } from "@/app/_lib/actions/user";
+import { FinalResultDisplay } from "./_components/FinalResultDisplay";
 
 type PageProps = {
   params: Promise<{
@@ -8,7 +8,11 @@ type PageProps = {
   }>;
 };
 
-// TODO: US-003-06で実装する
+/**
+ * 最終結果ページ（Server Component）
+ * - サーバーサイドで最終結果を取得
+ * - FinalResultDisplay（Client Component）に渡す
+ */
 export default async function FinalResultPage({ params }: PageProps) {
   const { eventId: eventIdStr } = await params;
   const eventId = parseInt(eventIdStr, 10);
@@ -24,25 +28,28 @@ export default async function FinalResultPage({ params }: PageProps) {
     redirect(`/events/${eventId}`);
   }
 
-  return (
-    <main
-      className="
-      flex flex-col items-center justify-center
-      min-h-screen
-      p-4
-      bg-gradient-to-br from-blue-50 to-indigo-100
-    "
-    >
+  // 最終結果を取得
+  const result = await getFinalResults(eventId);
+
+  if (!result.success) {
+    return (
       <div
         className="
-        w-full max-w-md
-        p-8 space-y-6
-        bg-white rounded-lg shadow-lg
-        text-center
+        flex flex-col items-center justify-center
+        w-full h-screen
+        bg-gray-50
+        space-y-4
       "
       >
-        <UnimplementedScreen currentScreen="final_result" />
+        <p className="text-lg font-semibold text-red-600">エラー</p>
+        <p className="text-gray-600">
+          {result.error || "最終結果の読み込みに失敗しました"}
+        </p>
       </div>
-    </main>
-  );
+    );
+  }
+
+  const { data } = result;
+
+  return <FinalResultDisplay data={data} />;
 }

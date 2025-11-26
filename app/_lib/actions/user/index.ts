@@ -31,3 +31,6 @@ export type { GetAnswerResultResult } from './getAnswerResult';
 
 export { getPeriodResults } from './getPeriodResults';
 export type { GetPeriodResultsResult, PeriodResultData, RankingEntry, UserResult } from './getPeriodResults';
+
+export { getFinalResults } from './getFinalResults';
+export type { GetFinalResultsResult, FinalResultData, PeriodChampion } from './getFinalResults';
