@@ -2,7 +2,7 @@
 
 import { createAdminClient } from '@/app/_lib/supabase/server-admin';
 import { Database } from '@/app/_lib/types/database';
-import { getNextQuestion, createQuestionDisplay } from '../utils';
+import { getNextQuestion, createQuestionDisplay, getNextPeriod } from '../utils';
 
 /**
  * question画面への遷移処理
@@ -98,7 +98,14 @@ export async function handleQuestionTransition(
 
     // period_result → question の場合は次ピリオドの第1問を取得
     if (currentControl.current_screen === 'period_result') {
-      const nextPeriodId = currentControl.current_period_id;
+      if (!currentControl.current_period_id) {
+        return {
+          success: false,
+          error: 'ピリオド情報が見つかりません',
+        };
+      }
+
+      const nextPeriodId = await getNextPeriod(supabase, currentControl.current_period_id, eventId);
 
       if (!nextPeriodId) {
         return {

@@ -7,7 +7,6 @@ import { QUIZ_TRANSITION_RULES } from '@/app/_lib/constants/quiz-transition';
 import {
   handleQuestionTransition,
   handleAnswerTransition,
-  handlePeriodResultTransition,
 } from './handlers';
 
 export interface UpdateQuizControlInput {
@@ -114,24 +113,6 @@ export async function updateQuizControl(
         };
       }
       updateData.question_closed_at = new Date().toISOString();
-    }
-
-    // period_result画面に遷移時: 次ピリオドを自動決定
-    if (nextScreen === 'period_result') {
-      const result = await handlePeriodResultTransition(
-        supabase,
-        currentControl,
-        eventId
-      );
-      if (!result.success) {
-        return {
-          success: false,
-          error: result.error,
-        };
-      }
-      // period_result画面では、次のperiodをセットする
-      updateData.current_period_id = result.nextPeriodId;
-      updateData.current_question_id = null;
     }
 
     // quiz_control を更新
