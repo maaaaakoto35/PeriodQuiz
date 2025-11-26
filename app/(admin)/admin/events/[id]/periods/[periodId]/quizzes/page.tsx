@@ -1,5 +1,6 @@
 import { getQuizzes } from "@/app/_lib/actions/admin/quizzes";
 import { QuizList } from "./_components/QuizList";
+import Link from "next/link";
 
 interface QuizzesPageProps {
   params: Promise<{
@@ -45,6 +46,19 @@ export default async function QuizzesPage({ params }: QuizzesPageProps) {
         eventId={Number(eventId)}
         periodId={Number(periodId)}
       />
+
+      <Link
+        href={`/admin/events/${eventId}/periods`}
+        className="
+          inline-flex items-center justify-center
+          rounded-md px-4 py-2
+          text-sm font-medium text-gray-600
+          hover:text-gray-900 hover:bg-gray-100
+          transition-colors
+        "
+      >
+        戻る
+      </Link>
     </div>
   );
 }

@@ -20,7 +20,7 @@ CREATE TABLE periods (
     event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     order_num INTEGER NOT NULL,
-    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'completed')),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'completed')), -- TODO: 削除
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(event_id, order_num)
