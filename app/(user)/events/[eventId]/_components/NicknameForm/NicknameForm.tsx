@@ -30,8 +30,6 @@ export function NicknameForm({ eventId, errorReason }: NicknameFormProps) {
   // エラーメッセージのマッピング
   const getErrorMessage = (reason: SessionErrorReason): string => {
     switch (reason) {
-      case "quiz_started":
-        return "クイズは既に開始されています。新規参加はできません。";
       case "session_expired":
         return "セッションが無効です。ニックネームを入力して再度参加してください。";
       default:
