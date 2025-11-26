@@ -1,11 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { SCREEN_NAMES } from "../_constants";
 import type { QuizControlState } from "../_hooks";
+import { resetEvent } from "@/app/_lib/actions/admin";
 
 interface CurrentStateDisplayProps {
   state: QuizControlState;
   userCount: number;
+  eventId: number;
+  onReset: () => void;
+  isUpdating: boolean;
 }
 
 /**
@@ -17,14 +22,59 @@ interface CurrentStateDisplayProps {
  * - 正答ユーザー数（将来実装）
  * - 現在のピリオド名
  * - 現在の質問テキスト
+ * - リセットボタン（ヘッダー右側）
  */
 export function CurrentStateDisplay({
   state,
   userCount,
+  eventId,
+  onReset,
+  isUpdating,
 }: CurrentStateDisplayProps) {
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleReset = async () => {
+    const message =
+      "問題表示の記録とユーザーの回答データが全て削除されます。\nリセットしてもよろしいですか？";
+
+    if (!window.confirm(message)) {
+      return;
+    }
+
+    setIsResetting(true);
+
+    try {
+      const result = await resetEvent(eventId);
+
+      if (!result.success) {
+        alert(`リセットに失敗しました:\n${result.error}`);
+        return;
+      }
+
+      // リセット成功時に onReset コールバック実行
+      onReset();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "不明なエラー";
+      alert(`リセット処理中にエラーが発生しました:\n${message}`);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">
-      <h2 className="mb-6 text-lg font-semibold text-gray-900">現在の状態</h2>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-gray-900">現在の状態</h2>
+        <button
+          onClick={handleReset}
+          disabled={isUpdating || isResetting}
+          className="rounded px-3 py-1.5 text-sm font-medium transition-colors
+            bg-red-100 text-red-700 hover:bg-red-200
+            disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isResetting ? "リセット中..." : "リセット"}
+        </button>
+      </div>
 
       <div className="mb-6 grid grid-cols-3 gap-6">
         <div className="rounded-lg bg-blue-50 p-4">
