@@ -84,7 +84,7 @@ export async function getPeriodResultsForMonitor(
     }
 
     // ランキングに順位を付与し、上位10位を抽出
-    const rankingWithPosition = allRankings.map((entry: any, index: number) => ({
+    const rankingWithPosition = allRankings.map((entry, index: number) => ({
       rank: index + 1,
       userId: entry.user_id as number,
       nickname: entry.nickname as string,
