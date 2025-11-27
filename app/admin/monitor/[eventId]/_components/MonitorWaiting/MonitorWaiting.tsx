@@ -1,15 +1,10 @@
 "use client";
-
-interface MonitorWaitingProps {
-  eventId: number;
-}
-
 /**
  * モニター画面 - 待機中
  *
  * クイズ開始を待っている状態を表示
  */
-export function MonitorWaiting({ eventId }: MonitorWaitingProps) {
+export function MonitorWaiting() {
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
       <div className="text-center max-w-md">

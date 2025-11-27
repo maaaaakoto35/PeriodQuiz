@@ -36,7 +36,7 @@ export function MonitorSection({
   const renderScreen = () => {
     switch (currentScreen) {
       case "waiting":
-        return <MonitorWaiting eventId={eventId} />;
+        return <MonitorWaiting />;
       case "question":
         return <MonitorQuestion eventId={eventId} />;
       case "answer":
