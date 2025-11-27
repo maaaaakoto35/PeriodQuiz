@@ -1,7 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useRealtimeUserCount } from './useRealtimeUserCount';
-import * as supabaseClient from '@/app/_lib/supabase/client';
 
 // Supabaseクライアントのモック
 const mockChannel = {

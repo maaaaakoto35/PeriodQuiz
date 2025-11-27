@@ -220,7 +220,7 @@ describe("AnswerPage", () => {
         error: "問題が見つかりません",
       } as any);
 
-      const { container } = render(
+      render(
         await AnswerPage({
           params: Promise.resolve({
             eventId: "1",
