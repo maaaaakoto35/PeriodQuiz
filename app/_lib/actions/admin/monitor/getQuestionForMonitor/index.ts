@@ -1,0 +1,1 @@
+export { getQuestionForMonitor } from './getQuestionForMonitor';

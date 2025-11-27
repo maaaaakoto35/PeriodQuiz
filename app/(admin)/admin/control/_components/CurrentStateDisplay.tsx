@@ -60,19 +60,58 @@ export function CurrentStateDisplay({
     }
   };
 
+  const handleOpenMonitor = () => {
+    window.open(`/admin/monitor/${eventId}`, "_blank", "width=1200,height=800");
+  };
+
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-gray-900">現在の状態</h2>
-        <button
-          onClick={handleReset}
-          disabled={isUpdating || isResetting}
-          className="rounded px-3 py-1.5 text-sm font-medium transition-colors
-            bg-red-100 text-red-700 hover:bg-red-200
-            disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isResetting ? "リセット中..." : "リセット"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleOpenMonitor}
+            className="flex items-center gap-2 rounded px-3 py-1.5 text-sm font-medium transition-colors
+              bg-blue-100 text-blue-700 hover:bg-blue-200"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+              />
+            </svg>
+            モニター画面を開く
+          </button>
+          <button
+            onClick={handleReset}
+            disabled={isUpdating || isResetting}
+            className="flex items-center gap-2 rounded px-3 py-1.5 text-sm font-medium transition-colors
+              bg-red-100 text-red-700 hover:bg-red-200
+              disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            {isResetting ? "リセット中..." : "リセット"}
+          </button>
+        </div>
       </div>
 
       <div className="mb-6 grid grid-cols-3 gap-6">

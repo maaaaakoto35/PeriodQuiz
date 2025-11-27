@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { type RankingsData, type RankingEntry } from "@/app/_lib/types/ranking";
+import { type RankingsData } from "@/app/_lib/types/ranking";
 
 interface RankingsPanelProps {
   rankings: RankingsData | null;
