@@ -3,9 +3,23 @@
 import { useEffect, useState } from "react";
 import { getAnswerForMonitor } from "@/app/_lib/actions/admin";
 import type { MonitorAnswerData } from "@/app/_lib/actions/admin";
+import { createClient } from "@/app/_lib/supabase/client";
+import {
+  MonitorAnswerHeader,
+  AnswerContent,
+  QuestionPanel,
+} from "./components";
+
+import styles from "./MonitorAnswer.module.css";
 
 interface MonitorAnswerProps {
   eventId: number;
+}
+
+interface EventInfo {
+  eventName: string;
+  periodName: string;
+  questionNumber: number;
 }
 
 /**
@@ -15,6 +29,7 @@ interface MonitorAnswerProps {
  */
 export function MonitorAnswer({ eventId }: MonitorAnswerProps) {
   const [data, setData] = useState<MonitorAnswerData | null>(null);
+  const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,6 +37,43 @@ export function MonitorAnswer({ eventId }: MonitorAnswerProps) {
     let isMounted = true;
 
     const fetch = async () => {
+      // イベント情報とピリオド情報を取得
+      const supabase = await createClient();
+
+      const { data: quizControl } = await supabase
+        .from("quiz_control")
+        .select("current_period_id, current_question_id")
+        .eq("event_id", eventId)
+        .single();
+
+      if (quizControl?.current_period_id) {
+        const { data: period } = await supabase
+          .from("periods")
+          .select("name, order_num")
+          .eq("id", quizControl.current_period_id)
+          .single();
+
+        const { data: event } = await supabase
+          .from("events")
+          .select("name")
+          .eq("id", eventId)
+          .single();
+
+        const { count } = await supabase
+          .from("question_displays")
+          .select("id, periods!inner(event_id)", { count: "exact" })
+          .eq("periods.event_id", eventId);
+
+        if (isMounted && period && event) {
+          setEventInfo({
+            eventName: event.name,
+            periodName: period.name,
+            questionNumber: count || 0,
+          });
+        }
+      }
+
+      // 正解情報を取得
       const result = await getAnswerForMonitor(eventId);
 
       if (!isMounted) return;
@@ -43,7 +95,7 @@ export function MonitorAnswer({ eventId }: MonitorAnswerProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-r-blue-600"></div>
           <p className="mt-4 text-gray-600">結果を読み込み中...</p>
@@ -52,9 +104,9 @@ export function MonitorAnswer({ eventId }: MonitorAnswerProps) {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !eventInfo) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <p className="text-red-600 font-semibold">
             {error || "結果の読み込みに失敗しました"}
@@ -67,84 +119,23 @@ export function MonitorAnswer({ eventId }: MonitorAnswerProps) {
   const correctChoice = data.choices.find((c) => c.isCorrect);
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      {/* 正解バッジ */}
-      <div className="mb-8 text-center">
-        <div className="inline-block px-6 py-3 bg-green-100 rounded-lg border-2 border-green-500">
-          <p className="text-lg font-bold text-green-700">✓ 正解発表</p>
-        </div>
-      </div>
+    <div className={styles.root}>
+      {/* ヘッダー */}
+      <MonitorAnswerHeader
+        eventName={eventInfo.eventName}
+        periodName={eventInfo.periodName}
+      />
 
-      {/* 問題テキスト */}
-      <div className="mb-8 p-6 bg-white rounded-lg shadow">
-        <h2 className="text-2xl font-bold text-gray-900">
-          {data.questionText}
-        </h2>
-      </div>
+      {/* コンテンツエリア */}
+      <div className={styles.main}>
+        {/* 左側: 問題画像と選択肢 */}
+        <AnswerContent data={data} correctChoiceId={correctChoice?.id} />
 
-      {/* 問題画像 */}
-      {data.questionImageUrl && (
-        <div className="mb-8 text-center">
-          <img
-            src={data.questionImageUrl}
-            alt="Question"
-            className="max-w-full h-auto rounded-lg shadow"
-          />
-        </div>
-      )}
-
-      {/* 選択肢 */}
-      <div className="space-y-4">
-        {data.choices.map((choice, index) => {
-          const isCorrect = choice.id === correctChoice?.id;
-          return (
-            <div
-              key={choice.id}
-              className={`p-6 rounded-lg shadow-md border-2 transition-colors ${
-                isCorrect
-                  ? "bg-green-50 border-green-500"
-                  : "bg-white border-gray-200"
-              }`}
-            >
-              {/* 選択肢画像 */}
-              {choice.imageUrl && (
-                <div className="mb-4 text-center">
-                  <img
-                    src={choice.imageUrl}
-                    alt={`Choice ${index + 1}`}
-                    className="max-w-full h-auto rounded-lg"
-                  />
-                </div>
-              )}
-
-              {/* 選択肢テキスト */}
-              <div className="flex items-center">
-                <div
-                  className={`flex items-center justify-center w-10 h-10 rounded-full font-bold mr-4 flex-shrink-0 ${
-                    isCorrect
-                      ? "bg-green-600 text-white"
-                      : "bg-gray-300 text-gray-600"
-                  }`}
-                >
-                  {String.fromCharCode(65 + index)}
-                </div>
-                <p className="text-lg text-gray-900">{choice.text}</p>
-                {isCorrect && (
-                  <div className="ml-auto px-4 py-2 bg-green-100 rounded-lg border border-green-500">
-                    <p className="text-sm font-bold text-green-700">正解</p>
-                  </div>
-                )}
-              </div>
-
-              {/* 選択人数 */}
-              {choice.selectionCount && choice.selectionCount > 0 && (
-                <div className="mt-3 text-sm text-gray-600">
-                  選択人数: {choice.selectionCount}名
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {/* 右側: 問題パネル */}
+        <QuestionPanel
+          questionText={data.questionText}
+          questionNumber={eventInfo.questionNumber}
+        />
       </div>
     </div>
   );
