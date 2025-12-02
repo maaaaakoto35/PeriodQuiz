@@ -1,0 +1,61 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 145px;
+  align-self: stretch;
+  padding: 10px;
+  background: linear-gradient(
+    180deg,
+    #00188f 0%,
+    rgba(82.95, 111.29, 255, 0) 63%
+  );
+  border-radius: 12px;
+  overflow: hidden;
+  align-items: center;
+}
+
+.qIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 64px;
+  color: white;
+  font-weight: 500;
+}
+
+.sentence {
+  width: 80%;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-size: 32px;
+  background: rgba(230, 230, 230, 0.7);
+  color: #002aff;
+  border-radius: 32px;
+}
+
+.questionNumber {
+  width: 80px;
+  height: 80px;
+  padding: 12px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    #ff2d55 0%,
+    #991b33 100%
+  );
+  border-radius: 84px;
+  outline: 4px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 64px;
+  font-weight: 500;
+}

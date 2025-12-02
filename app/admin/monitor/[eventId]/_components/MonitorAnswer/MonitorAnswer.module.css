@@ -1,0 +1,17 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  background-image: url("/quiz_background.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 40px 0;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;
+}

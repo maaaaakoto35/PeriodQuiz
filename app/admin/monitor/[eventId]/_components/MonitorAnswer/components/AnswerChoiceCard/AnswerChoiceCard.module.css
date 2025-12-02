@@ -1,0 +1,14 @@
+.rootWithImage {
+  display: flex;
+  flex-direction: column;
+}
+
+.rootWithoutImage {
+  display: flex;
+  flex-direction: row;
+}
+
+.imageContainer {
+  border-radius: 16px;
+  background: rgba(230, 230, 230, 0.7);
+}
