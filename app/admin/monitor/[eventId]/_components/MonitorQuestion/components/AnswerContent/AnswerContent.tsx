@@ -5,13 +5,18 @@ import styles from "./AnswerContent.module.css";
 
 interface AnswerContentProps {
   data: MonitorAnswerData;
+  isAnswer?: boolean;
   correctChoiceId?: number;
 }
 
 /**
  * モニター画面 - 正解発表コンテンツ（問題画像と選択肢）
  */
-export function AnswerContent({ data, correctChoiceId }: AnswerContentProps) {
+export function AnswerContent({
+  data,
+  isAnswer,
+  correctChoiceId,
+}: AnswerContentProps) {
   return (
     <div className={styles.root}>
       {/* 問題画像 */}
@@ -33,8 +38,8 @@ export function AnswerContent({ data, correctChoiceId }: AnswerContentProps) {
               choiceIndex={index}
               choiceText={choice.text}
               choiceImageUrl={data.questionImageUrl ? null : choice.imageUrl}
-              selectionCount={choice.selectionCount || 0}
-              isCorrect={choice.id === correctChoiceId}
+              selectionCount={!!isAnswer ? choice.selectionCount || 0 : null}
+              isCorrect={!!isAnswer && choice.id === correctChoiceId}
               rowIndex={0}
             />
           ))}
@@ -48,8 +53,8 @@ export function AnswerContent({ data, correctChoiceId }: AnswerContentProps) {
               choiceIndex={index + 2}
               choiceText={choice.text}
               choiceImageUrl={data.questionImageUrl ? null : choice.imageUrl}
-              selectionCount={choice.selectionCount || 0}
-              isCorrect={choice.id === correctChoiceId}
+              selectionCount={!!isAnswer ? choice.selectionCount || 0 : null}
+              isCorrect={!!isAnswer && choice.id === correctChoiceId}
               rowIndex={1}
             />
           ))}

@@ -4,16 +4,15 @@ import type { QuizScreen } from "@/app/_lib/types/quiz";
 import {
   MonitorWaiting,
   MonitorQuestion,
-  MonitorAnswer,
   MonitorBreak,
   MonitorPeriodResult,
   MonitorFinalResult,
 } from "./";
 import { useQuizScreenMonitoring } from "../_hooks/useQuizScreenMonitoring";
+import styles from "./MonitorSection.module.css";
 
 interface MonitorSectionProps {
   eventId: number;
-  eventName: string;
   initialScreen: QuizScreen;
 }
 
@@ -27,7 +26,6 @@ interface MonitorSectionProps {
  */
 export function MonitorSection({
   eventId,
-  eventName,
   initialScreen,
 }: MonitorSectionProps) {
   const currentScreen = useQuizScreenMonitoring(eventId, initialScreen);
@@ -38,9 +36,17 @@ export function MonitorSection({
       case "waiting":
         return <MonitorWaiting />;
       case "question":
-        return <MonitorQuestion eventId={eventId} />;
+        return (
+          <MonitorQuestion eventId={eventId} currentScreen={currentScreen} />
+        );
       case "answer":
-        return <MonitorAnswer eventId={eventId} />;
+        return (
+          <MonitorQuestion
+            eventId={eventId}
+            currentScreen={currentScreen}
+            isAnswer
+          />
+        );
       case "break":
         return <MonitorBreak eventId={eventId} />;
       case "period_result":
@@ -53,31 +59,9 @@ export function MonitorSection({
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50">
-      {/* ヘッダー */}
-      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{eventName}</h1>
-              <p className="mt-1 text-sm text-gray-500">モニター画面</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-600">
-                画面:{" "}
-                <span className="font-semibold text-blue-600">
-                  {currentScreen}
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className={styles.root}>
       {/* コンテンツ */}
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        {renderScreen()}
-      </div>
+      {renderScreen()}
     </div>
   );
 }

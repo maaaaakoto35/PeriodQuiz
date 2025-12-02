@@ -1,1 +1,0 @@
-export { MonitorAnswer } from './MonitorAnswer';
