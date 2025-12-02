@@ -4,7 +4,7 @@ interface AnswerChoiceCardProps {
   choiceIndex: number;
   choiceText: string;
   choiceImageUrl: string | null;
-  selectionCount: number;
+  selectionCount: number | null;
   isCorrect: boolean;
   rowIndex: number;
 }
@@ -21,20 +21,17 @@ export function AnswerChoiceCard({
   rowIndex,
 }: AnswerChoiceCardProps) {
   const getBadgeGradient = () => {
-    if (isCorrect) {
-      return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#FF2D55_0%,_#991B33_100%)]";
-    }
-
-    // 第1行の色分け
-    if (rowIndex === 0) {
-      return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#0088FF_0%,_#005299_100%)]";
-    }
-
-    // 第2行の色分け
-    if (choiceIndex === 2) {
-      return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#34C759_0%,_#19612B_100%)]";
-    } else {
-      return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#FF8D28_0%,_#995518_100%)]";
+    switch (choiceIndex) {
+      case 0:
+        return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#0088FF_0%,_#005299_100%)]";
+      case 1:
+        return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#FF2D55_0%,_#991B33_100%)]";
+      case 2:
+        return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#34C759_0%,_#19612B_100%)]";
+      case 3:
+        return "bg-[radial-gradient(ellipse_50.00%_50.00%_at_50.00%_50.00%,_#FF8D28_0%,_#995518_100%)]";
+      default:
+        break;
     }
   };
 
@@ -82,21 +79,23 @@ export function AnswerChoiceCard({
         </div>
 
         {/* 選択人数 */}
-        <div
-          className={`w-14 h-10 px-7 rounded-xl flex justify-center items-center gap-2.5 overflow-hidden ${
-            isCorrect
-              ? "bg-gradient-to-l from-amber-400 to-orange-400"
-              : "bg-gradient-to-l from-white to-cyan-500"
-          }`}
-        >
+        {selectionCount !== null && (
           <div
-            className={`text-center justify-center text-3xl font-medium font-['Inter'] leading-8 ${
-              isCorrect ? "text-red-500" : "text-blue-700"
+            className={`w-14 h-10 px-7 rounded-xl flex justify-center items-center gap-2.5 overflow-hidden ${
+              isCorrect
+                ? "bg-gradient-to-l from-amber-400 to-orange-400"
+                : "bg-gradient-to-l from-white to-cyan-500"
             }`}
           >
-            {selectionCount}
+            <div
+              className={`text-center justify-center text-3xl font-medium font-['Inter'] leading-8 ${
+                isCorrect ? "text-red-500" : "text-blue-700"
+              }`}
+            >
+              {selectionCount}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

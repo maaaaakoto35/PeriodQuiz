@@ -48,12 +48,9 @@ export default async function MonitorPage({ params }: MonitorPageProps) {
   }
 
   return (
-    <main className="min-h-screen w-full bg-gray-50">
-      <MonitorSection
-        eventId={eventId}
-        eventName={event.name}
-        initialScreen={quizControl.current_screen as QuizScreen}
-      />
-    </main>
+    <MonitorSection
+      eventId={eventId}
+      initialScreen={quizControl.current_screen as QuizScreen}
+    />
   );
 }
