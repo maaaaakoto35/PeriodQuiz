@@ -19,6 +19,17 @@ export async function getEventInfoForMonitor(
 ): Promise<EventInfo | null> {
   const supabase = await createClient();
 
+  // イベント情報を取得
+  const { data: event } = await supabase
+    .from("events")
+    .select("name")
+    .eq("id", eventId)
+    .single();
+
+  if (!event) {
+    return null;
+  }
+
   // quiz_control から current_period_id と current_question_id を取得
   const { data: quizControl } = await supabase
     .from("quiz_control")
@@ -27,7 +38,11 @@ export async function getEventInfoForMonitor(
     .single();
 
   if (!quizControl?.current_period_id) {
-    return null;
+    return {
+      eventName: event.name,
+      periodName: "",
+      questionNumber: 0,
+    }
   }
 
   // ピリオド情報を取得
@@ -35,13 +50,6 @@ export async function getEventInfoForMonitor(
     .from("periods")
     .select("name, order_num")
     .eq("id", quizControl.current_period_id)
-    .single();
-
-  // イベント情報を取得
-  const { data: event } = await supabase
-    .from("events")
-    .select("name")
-    .eq("id", eventId)
     .single();
 
   // 質問の総数を取得

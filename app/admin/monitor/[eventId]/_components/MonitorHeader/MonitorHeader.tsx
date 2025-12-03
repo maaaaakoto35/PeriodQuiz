@@ -1,25 +1,26 @@
-import styles from "./MonitorHeader.module.css";
+"use client";
 
-interface MonitorAnswerHeaderProps {
-  eventName: string;
-  periodName?: string;
-}
+import { useMonitorEventInfoContext } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
+import styles from "./MonitorHeader.module.css";
 
 /**
  * モニター画面用のヘッダー
  */
-export function MonitorHeader({
-  eventName,
-  periodName,
-}: MonitorAnswerHeaderProps) {
+export function MonitorHeader() {
+  const { eventInfo } = useMonitorEventInfoContext();
+
+  console.log("MonitorHeader render", { eventInfo });
+
   return (
     <div className={styles.root}>
       <div>
         {/* イベント名 */}
-        <div className={styles.eventName}>{eventName}</div>
+        <div className={styles.eventName}>{eventInfo?.eventName || ""}</div>
 
         {/* ピリオド名 */}
-        {periodName && <div className={styles.periodName}>{periodName}</div>}
+        {eventInfo?.periodName && (
+          <div className={styles.periodName}>{eventInfo.periodName}</div>
+        )}
       </div>
 
       {/* ロゴ */}

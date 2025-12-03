@@ -1,11 +1,13 @@
 "use client";
 
+import { EventInfo } from "@/app/_lib/actions/admin";
 import { MonitorEventInfoContextProvider } from "../_context/MonitorEventInfoContext";
 import { useQuizScreenContext } from "../_context/QuizScreenContext";
 import { useEventInfoFetch } from "../_hooks/useEventInfoFetch";
 
 interface MonitorEventInfoProviderProps {
   children: React.ReactNode;
+  initialEventInfo: EventInfo | null;
 }
 
 /**
@@ -18,11 +20,13 @@ interface MonitorEventInfoProviderProps {
  */
 export function MonitorEventInfoProvider({
   children,
+  initialEventInfo,
 }: MonitorEventInfoProviderProps) {
   const { eventId, currentScreen } = useQuizScreenContext();
   const { eventInfo, loading, error } = useEventInfoFetch(
     eventId,
-    currentScreen
+    currentScreen,
+    initialEventInfo
   );
 
   return (

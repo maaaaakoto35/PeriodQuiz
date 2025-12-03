@@ -27,18 +27,7 @@ export function BreakScreenClient({ images }: BreakScreenClientProps) {
   }
 
   return (
-    <div
-      className="
-      flex items-center justify-center h-screen
-      relative overflow-hidden
-    "
-      style={{
-        backgroundImage: "url('/quiz_background.jpeg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
+    <>
       {/* メインコンテンツ */}
       <div
         className="
@@ -139,6 +128,6 @@ export function BreakScreenClient({ images }: BreakScreenClientProps) {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

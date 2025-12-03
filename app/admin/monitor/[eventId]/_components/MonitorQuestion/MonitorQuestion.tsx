@@ -6,7 +6,7 @@ import type { MonitorAnswerData } from "@/app/_lib/actions/admin";
 import { AnswerContent, QuestionPanel } from "./components";
 import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
 import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
-import { useMonitorEventInfo } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
+import { useMonitorEventInfoContext } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
 
 import styles from "./MonitorAnswer.module.css";
 
@@ -21,7 +21,6 @@ interface MonitorAnswerProps {
  */
 export function MonitorQuestion({ isAnswer }: MonitorAnswerProps) {
   const { eventId, currentScreen } = useQuizScreenContext();
-  const { eventInfo } = useMonitorEventInfo();
   const [data, setData] = useState<MonitorAnswerData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +60,7 @@ export function MonitorQuestion({ isAnswer }: MonitorAnswerProps) {
     );
   }
 
-  if (error || !data || !eventInfo) {
+  if (error || !data) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -78,10 +77,7 @@ export function MonitorQuestion({ isAnswer }: MonitorAnswerProps) {
   return (
     <div className={styles.root}>
       {/* ヘッダー */}
-      <MonitorHeader
-        eventName={eventInfo.eventName}
-        periodName={eventInfo.periodName}
-      />
+      <MonitorHeader />
 
       {/* コンテンツエリア */}
       <div className={styles.main}>
@@ -93,10 +89,7 @@ export function MonitorQuestion({ isAnswer }: MonitorAnswerProps) {
         />
 
         {/* 右側: 問題パネル */}
-        <QuestionPanel
-          questionText={data.questionText}
-          questionNumber={eventInfo.questionNumber}
-        />
+        <QuestionPanel questionText={data.questionText} />
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import {
 } from "@/app/_lib/actions/admin";
 import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
 import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
-import { useMonitorEventInfo } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
+import { useMonitorEventInfoContext } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
 import styles from "./MonitorPeriodResult.module.css";
 import { Notice, RankingRow } from "../MonitorResult";
 
@@ -18,7 +18,6 @@ import { Notice, RankingRow } from "../MonitorResult";
  */
 export function MonitorPeriodResult() {
   const { eventId, currentScreen } = useQuizScreenContext();
-  const { eventInfo } = useMonitorEventInfo();
   const [data, setData] = useState<PeriodResultData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,10 +73,7 @@ export function MonitorPeriodResult() {
   return (
     <div className={styles.root}>
       {/* ヘッダー */}
-      <MonitorHeader
-        eventName={eventInfo?.eventName || ""}
-        periodName={eventInfo?.periodName || ""}
-      />
+      <MonitorHeader />
 
       {/* コンテンツエリア */}
       <div className={styles.main}>

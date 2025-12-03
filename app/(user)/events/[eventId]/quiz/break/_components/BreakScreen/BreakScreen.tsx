@@ -99,5 +99,20 @@ export async function BreakScreen({ eventId }: BreakScreenProps) {
   }
 
   // 画像を表示（Client Componentで管理）
-  return <BreakScreenClient images={images} />;
+  return (
+    <div
+      className="
+      flex items-center justify-center h-screen
+      relative overflow-hidden
+    "
+      style={{
+        backgroundImage: "url('/quiz_background.jpeg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <BreakScreenClient images={images} />
+    </div>
+  );
 }
