@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAnswerForMonitor } from "@/app/_lib/actions/admin";
-import { QuizScreen } from "@/app/_lib/types/quiz";
-import type { MonitorAnswerData } from "@/app/_lib/actions/admin";
-import { createClient } from "@/app/_lib/supabase/client";
 import {
-  MonitorAnswerHeader,
-  AnswerContent,
-  QuestionPanel,
-} from "./components";
+  getAnswerForMonitor,
+  getEventInfoForMonitor,
+} from "@/app/_lib/actions/admin";
+import { QuizScreen } from "@/app/_lib/types/quiz";
+import type { EventInfo, MonitorAnswerData } from "@/app/_lib/actions/admin";
+import { AnswerContent, QuestionPanel } from "./components";
+import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
 
 import styles from "./MonitorAnswer.module.css";
 
@@ -17,12 +16,6 @@ interface MonitorAnswerProps {
   eventId: number;
   currentScreen: QuizScreen;
   isAnswer?: boolean;
-}
-
-interface EventInfo {
-  eventName: string;
-  periodName: string;
-  questionNumber: number;
 }
 
 /**
@@ -44,40 +37,10 @@ export function MonitorQuestion({
     let isMounted = true;
 
     const fetch = async () => {
-      // イベント情報とピリオド情報を取得
-      const supabase = await createClient();
-
-      const { data: quizControl } = await supabase
-        .from("quiz_control")
-        .select("current_period_id, current_question_id")
-        .eq("event_id", eventId)
-        .single();
-
-      if (quizControl?.current_period_id) {
-        const { data: period } = await supabase
-          .from("periods")
-          .select("name, order_num")
-          .eq("id", quizControl.current_period_id)
-          .single();
-
-        const { data: event } = await supabase
-          .from("events")
-          .select("name")
-          .eq("id", eventId)
-          .single();
-
-        const { count } = await supabase
-          .from("question_displays")
-          .select("id, periods!inner(event_id)", { count: "exact" })
-          .eq("periods.event_id", eventId);
-
-        if (isMounted && period && event) {
-          setEventInfo({
-            eventName: event.name,
-            periodName: period.name,
-            questionNumber: count || 0,
-          });
-        }
+      // イベント情報を取得
+      const eventInfo = await getEventInfoForMonitor(eventId);
+      if (isMounted && eventInfo) {
+        setEventInfo(eventInfo);
       }
 
       // 正解情報を取得
@@ -128,7 +91,7 @@ export function MonitorQuestion({
   return (
     <div className={styles.root}>
       {/* ヘッダー */}
-      <MonitorAnswerHeader
+      <MonitorHeader
         eventName={eventInfo.eventName}
         periodName={eventInfo.periodName}
       />
