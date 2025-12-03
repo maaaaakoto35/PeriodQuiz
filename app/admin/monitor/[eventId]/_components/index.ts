@@ -4,3 +4,6 @@ export { MonitorQuestion } from './MonitorQuestion';
 export { MonitorBreak } from './MonitorBreak';
 export { MonitorPeriodResult } from './MonitorPeriodResult';
 export { MonitorFinalResult } from './MonitorFinalResult';
+export { MonitorEventInfoProvider } from './MonitorEventInfoProvider';
+export { MonitorHeader } from './MonitorHeader';
+export { QuizScreenProvider } from './QuizScreenProvider';

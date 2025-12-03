@@ -1,6 +1,10 @@
 import { createClient } from "@/app/_lib/supabase/server";
-import { MonitorSection } from "./_components/MonitorSection";
 import type { QuizScreen } from "@/app/_lib/types/quiz";
+import {
+  MonitorEventInfoProvider,
+  MonitorSection,
+  QuizScreenProvider,
+} from "@/app/admin/monitor/[eventId]/_components";
 
 interface MonitorPageProps {
   params: Promise<{
@@ -13,6 +17,7 @@ interface MonitorPageProps {
  *
  * 責務:
  * - eventId でイベント情報と初期画面状態を取得
+ * - QuizScreenProvider と MonitorEventInfoProvider でラップ
  * - MonitorSection に初期データを渡す
  */
 export default async function MonitorPage({ params }: MonitorPageProps) {
@@ -48,9 +53,13 @@ export default async function MonitorPage({ params }: MonitorPageProps) {
   }
 
   return (
-    <MonitorSection
+    <QuizScreenProvider
       eventId={eventId}
       initialScreen={quizControl.current_screen as QuizScreen}
-    />
+    >
+      <MonitorEventInfoProvider>
+        <MonitorSection />
+      </MonitorEventInfoProvider>
+    </QuizScreenProvider>
   );
 }
