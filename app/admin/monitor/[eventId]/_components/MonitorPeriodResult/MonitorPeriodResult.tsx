@@ -2,27 +2,24 @@
 
 import { useEffect, useState } from "react";
 import {
-  EventInfo,
-  getEventInfoForMonitor,
   getPeriodResultsForMonitor,
   type PeriodResultData,
 } from "@/app/_lib/actions/admin";
 import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
-import { RankingRow, Notice } from "./components";
+import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
+import { useMonitorEventInfo } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
 import styles from "./MonitorPeriodResult.module.css";
-
-interface MonitorPeriodResultProps {
-  eventId: number;
-}
+import { Notice, RankingRow } from "../MonitorResult";
 
 /**
  * モニター画面 - ピリオド結果
  *
  * ピリオド終了時のランキングを表示
  */
-export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
+export function MonitorPeriodResult() {
+  const { eventId, currentScreen } = useQuizScreenContext();
+  const { eventInfo } = useMonitorEventInfo();
   const [data, setData] = useState<PeriodResultData | null>(null);
-  const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +27,6 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
     let isMounted = true;
 
     const fetch = async () => {
-      const eventInfo = await getEventInfoForMonitor(eventId);
       const result = await getPeriodResultsForMonitor(eventId);
 
       if (!isMounted) return;
@@ -41,10 +37,6 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
         setError(result.error);
       }
 
-      if (eventInfo) {
-        setEventInfo(eventInfo);
-      }
-
       setLoading(false);
     };
 
@@ -52,7 +44,7 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
     return () => {
       isMounted = false;
     };
-  }, [eventId]);
+  }, [eventId, currentScreen]);
 
   if (loading) {
     return (

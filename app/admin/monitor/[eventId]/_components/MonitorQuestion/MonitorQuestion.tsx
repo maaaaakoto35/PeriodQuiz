@@ -1,20 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getAnswerForMonitor,
-  getEventInfoForMonitor,
-} from "@/app/_lib/actions/admin";
-import { QuizScreen } from "@/app/_lib/types/quiz";
-import type { EventInfo, MonitorAnswerData } from "@/app/_lib/actions/admin";
+import { getAnswerForMonitor } from "@/app/_lib/actions/admin";
+import type { MonitorAnswerData } from "@/app/_lib/actions/admin";
 import { AnswerContent, QuestionPanel } from "./components";
 import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
+import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
+import { useMonitorEventInfo } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
 
 import styles from "./MonitorAnswer.module.css";
 
 interface MonitorAnswerProps {
-  eventId: number;
-  currentScreen: QuizScreen;
   isAnswer?: boolean;
 }
 
@@ -23,13 +19,10 @@ interface MonitorAnswerProps {
  *
  * 正解を表示
  */
-export function MonitorQuestion({
-  eventId,
-  currentScreen,
-  isAnswer,
-}: MonitorAnswerProps) {
+export function MonitorQuestion({ isAnswer }: MonitorAnswerProps) {
+  const { eventId, currentScreen } = useQuizScreenContext();
+  const { eventInfo } = useMonitorEventInfo();
   const [data, setData] = useState<MonitorAnswerData | null>(null);
-  const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,12 +30,6 @@ export function MonitorQuestion({
     let isMounted = true;
 
     const fetch = async () => {
-      // イベント情報を取得
-      const eventInfo = await getEventInfoForMonitor(eventId);
-      if (isMounted && eventInfo) {
-        setEventInfo(eventInfo);
-      }
-
       // 正解情報を取得
       const result = await getAnswerForMonitor(eventId);
 

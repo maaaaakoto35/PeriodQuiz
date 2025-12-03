@@ -1,6 +1,5 @@
 "use client";
 
-import type { QuizScreen } from "@/app/_lib/types/quiz";
 import {
   MonitorWaiting,
   MonitorQuestion,
@@ -8,27 +7,18 @@ import {
   MonitorPeriodResult,
   MonitorFinalResult,
 } from "./";
-import { useQuizScreenMonitoring } from "../_hooks/useQuizScreenMonitoring";
+import { useQuizScreenContext } from "../_context/QuizScreenContext";
 import styles from "./MonitorSection.module.css";
-
-interface MonitorSectionProps {
-  eventId: number;
-  initialScreen: QuizScreen;
-}
 
 /**
  * モニター画面セクション（Client Component）
  *
  * 責務:
- * - Supabase Realtime で quiz_control を監視
- * - current_screen 変更を検知して画面遷移
- * - 状態管理: currentScreen のみ
+ * - QuizScreenContext から currentScreen を取得
+ * - 画面状態に応じて子コンポーネントを切り替え表示
  */
-export function MonitorSection({
-  eventId,
-  initialScreen,
-}: MonitorSectionProps) {
-  const currentScreen = useQuizScreenMonitoring(eventId, initialScreen);
+export function MonitorSection() {
+  const { currentScreen } = useQuizScreenContext();
 
   // 画面の選択と表示
   const renderScreen = () => {
@@ -36,23 +26,15 @@ export function MonitorSection({
       case "waiting":
         return <MonitorWaiting />;
       case "question":
-        return (
-          <MonitorQuestion eventId={eventId} currentScreen={currentScreen} />
-        );
+        return <MonitorQuestion isAnswer={false} />;
       case "answer":
-        return (
-          <MonitorQuestion
-            eventId={eventId}
-            currentScreen={currentScreen}
-            isAnswer
-          />
-        );
+        return <MonitorQuestion isAnswer={true} />;
       case "break":
-        return <MonitorBreak eventId={eventId} />;
+        return <MonitorBreak />;
       case "period_result":
-        return <MonitorPeriodResult eventId={eventId} />;
+        return <MonitorPeriodResult />;
       case "final_result":
-        return <MonitorFinalResult eventId={eventId} />;
+        return <MonitorFinalResult />;
       default:
         return <div>Unknown screen: {currentScreen}</div>;
     }

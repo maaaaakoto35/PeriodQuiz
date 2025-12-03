@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/app/_lib/supabase/client";
 import { BreakScreenClient } from "@/app/(user)/events/[eventId]/quiz/break/_components/BreakScreen/BreakScreenClient";
-
-interface MonitorBreakProps {
-  eventId: number;
-}
+import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
 
 interface BreakImage {
   id: string;
@@ -20,7 +17,8 @@ interface BreakImage {
  * - BreakScreenClient でランダムに表示（5秒ごと切り替え）
  * - 画像未設定時はメッセージ表示
  */
-export function MonitorBreak({ eventId }: MonitorBreakProps) {
+export function MonitorBreak() {
+  const { eventId } = useQuizScreenContext();
   const [images, setImages] = useState<BreakImage[]>([]);
   const [loading, setLoading] = useState(true);
 
