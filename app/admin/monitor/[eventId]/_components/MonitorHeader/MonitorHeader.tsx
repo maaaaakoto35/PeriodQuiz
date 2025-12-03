@@ -1,14 +1,14 @@
-import styles from "./MonitorAnswerHeader.module.css";
+import styles from "./MonitorHeader.module.css";
 
 interface MonitorAnswerHeaderProps {
   eventName: string;
-  periodName: string;
+  periodName?: string;
 }
 
 /**
- * モニター画面 - 正解発表ヘッダー
+ * モニター画面用のヘッダー
  */
-export function MonitorAnswerHeader({
+export function MonitorHeader({
   eventName,
   periodName,
 }: MonitorAnswerHeaderProps) {
@@ -19,7 +19,7 @@ export function MonitorAnswerHeader({
         <div className={styles.eventName}>{eventName}</div>
 
         {/* ピリオド名 */}
-        <div className={styles.periodName}>{periodName}</div>
+        {periodName && <div className={styles.periodName}>{periodName}</div>}
       </div>
 
       {/* ロゴ */}

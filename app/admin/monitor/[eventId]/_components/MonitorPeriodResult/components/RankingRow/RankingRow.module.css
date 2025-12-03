@@ -1,0 +1,101 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 91px;
+  padding: 10px;
+  border-radius: 8px 50px 50px 8px;
+  overflow: hidden;
+}
+
+.rootRank1 {
+  composes: root;
+  background: linear-gradient(to top, #ff2d55, #820019);
+}
+
+.rootRank2Plus {
+  composes: root;
+  background: linear-gradient(to top, #002aff, #00178a);
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 74px;
+  padding: 11px 27px;
+  border-radius: 8px;
+  border: 0.5px solid white;
+  font-size: 32px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  color: white;
+  background: linear-gradient(to bottom, #002aff, #4d6bff);
+}
+
+.rankRank1 {
+  composes: rank;
+  color: #ffcc00;
+  background: linear-gradient(to bottom, #ff2d55, #fe8da3);
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  width: 475px;
+  padding: 0 32px;
+  font-size: 32px;
+  font-weight: 500;
+  text-align: center;
+  color: white;
+  white-space: nowrap;
+}
+
+.correctCount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 81px;
+  height: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  font-size: 32px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  color: white;
+  background: #ffcc00;
+}
+
+.correctCountRank1 {
+  composes: correctCount;
+  color: #ffcc00;
+  background: linear-gradient(to left, #ff2d55 6.173%, #ff5500 93.827%);
+}
+
+.correctCountRank2Plus {
+  composes: correctCount;
+  color: #002aff;
+  background: #ffcc00;
+}
+
+.time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 100%;
+  padding: 19px 18px;
+  font-size: 36px;
+  font-weight: 500;
+  text-align: center;
+  color: white;
+  white-space: nowrap;
+}
+
+.timeRank1 {
+  composes: time;
+  color: #f9dc69;
+}

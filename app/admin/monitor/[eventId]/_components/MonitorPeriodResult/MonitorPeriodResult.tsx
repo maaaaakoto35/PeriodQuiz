@@ -2,9 +2,14 @@
 
 import { useEffect, useState } from "react";
 import {
+  EventInfo,
+  getEventInfoForMonitor,
   getPeriodResultsForMonitor,
   type PeriodResultData,
 } from "@/app/_lib/actions/admin";
+import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
+import { RankingRow, Notice } from "./components";
+import styles from "./MonitorPeriodResult.module.css";
 
 interface MonitorPeriodResultProps {
   eventId: number;
@@ -17,6 +22,7 @@ interface MonitorPeriodResultProps {
  */
 export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
   const [data, setData] = useState<PeriodResultData | null>(null);
+  const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +30,7 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
     let isMounted = true;
 
     const fetch = async () => {
+      const eventInfo = await getEventInfoForMonitor(eventId);
       const result = await getPeriodResultsForMonitor(eventId);
 
       if (!isMounted) return;
@@ -33,6 +40,11 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
       } else {
         setError(result.error);
       }
+
+      if (eventInfo) {
+        setEventInfo(eventInfo);
+      }
+
       setLoading(false);
     };
 
@@ -44,10 +56,12 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="text-center">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-r-blue-600"></div>
-          <p className="mt-4 text-gray-600">結果を読み込み中...</p>
+      <div className={styles.root}>
+        <div className={styles.emptyState}>
+          <div className="text-center">
+            <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-r-blue-600"></div>
+            <p className="mt-4 text-gray-600">結果を読み込み中...</p>
+          </div>
         </div>
       </div>
     );
@@ -55,8 +69,8 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
 
   if (error || !data) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="text-center">
+      <div className={styles.root}>
+        <div className={styles.emptyState}>
           <p className="text-red-600 font-semibold">
             {error || "読み込み失敗"}
           </p>
@@ -66,58 +80,36 @@ export function MonitorPeriodResult({ eventId }: MonitorPeriodResultProps) {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      {/* タイトル */}
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">ピリオド結果</h1>
-        <p className="text-lg text-gray-600">{data.periodName}</p>
-      </div>
+    <div className={styles.root}>
+      {/* ヘッダー */}
+      <MonitorHeader
+        eventName={eventInfo?.eventName || ""}
+        periodName={eventInfo?.periodName || ""}
+      />
 
-      {/* ランキング表 */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gradient-to-r from-blue-600 to-blue-700">
-            <tr>
-              <th className="px-6 py-4 text-left text-white font-bold">順位</th>
-              <th className="px-6 py-4 text-left text-white font-bold">
-                ニックネーム
-              </th>
-              <th className="px-6 py-4 text-right text-white font-bold">
-                正解数
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.ranking.length > 0 ? (
-              data.ranking.map((entry, index) => (
-                <tr
-                  key={`${entry.rank}-${entry.userId}`}
-                  className={`border-t border-gray-200 ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } hover:bg-blue-50 transition-colors`}
-                >
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white font-bold text-sm">
-                      {entry.rank}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-gray-900 font-semibold">
-                    {entry.nickname}
-                  </td>
-                  <td className="px-6 py-4 text-right text-lg font-bold text-blue-600">
-                    {entry.correctCount}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
-                  ランキングデータがありません
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {/* コンテンツエリア */}
+      <div className={styles.main}>
+        {/* 左側: ランキングリスト */}
+        <div className={styles.rankingList}>
+          {data.ranking.length > 0 ? (
+            data.ranking.map((entry) => (
+              <RankingRow
+                key={`${entry.rank}-${entry.userId}`}
+                rank={entry.rank}
+                nickname={entry.nickname}
+                correctCount={entry.correctCount}
+                time={entry.totalResponseTimeMs / 1000}
+              />
+            ))
+          ) : (
+            <div className={styles.emptyState}>
+              ランキングデータがありません
+            </div>
+          )}
+        </div>
+
+        {/* 右側: 「早押しベスト10」通知 */}
+        <Notice isPeriod />
       </div>
     </div>
   );
