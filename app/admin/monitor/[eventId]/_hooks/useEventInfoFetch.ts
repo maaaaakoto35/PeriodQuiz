@@ -24,9 +24,10 @@ interface EventInfoState {
  */
 export function useEventInfoFetch(
   eventId: number,
-  currentScreen: string
+  currentScreen: string,
+  initialEventInfo: EventInfo | null
 ): EventInfoState {
-  const [eventInfo, setEventInfo] = useState<EventInfo | null>(null);
+  const [eventInfo, setEventInfo] = useState<EventInfo | null>(initialEventInfo);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

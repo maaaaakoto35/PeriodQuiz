@@ -5,6 +5,9 @@ import { createClient } from "@/app/_lib/supabase/client";
 import { BreakScreenClient } from "@/app/(user)/events/[eventId]/quiz/break/_components/BreakScreen/BreakScreenClient";
 import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
 
+import styles from "./MonitorBreak.module.css";
+import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
+
 interface BreakImage {
   id: string;
   image_url: string;
@@ -74,5 +77,11 @@ export function MonitorBreak() {
   }
 
   // 画像を表示（Client Componentで管理）
-  return <BreakScreenClient images={images} />;
+  return (
+    <div className={styles.root}>
+      <MonitorHeader />
+
+      <BreakScreenClient images={images} />
+    </div>
+  );
 }

@@ -1,4 +1,8 @@
 "use client";
+
+import { MonitorHeader } from "../MonitorHeader";
+import styles from "./MonitorWaiting.module.css";
+
 /**
  * モニター画面 - 待機中
  *
@@ -6,22 +10,22 @@
  */
 export function MonitorWaiting() {
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <div className="text-center max-w-md">
-        <div className="mb-6">
-          <div className="inline-block h-16 w-16 animate-spin rounded-full border-4 border-gray-300 border-r-blue-600"></div>
+    <div className={styles.container}>
+      <MonitorHeader />
+
+      <div className={styles.content}>
+        <div className={styles.spinnerWrapper}>
+          <div className={styles.spinner}></div>
         </div>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          クイズ開始待機中
-        </h1>
+        <h1 className={styles.title}>クイズ開始待機中</h1>
 
-        <p className="text-lg text-gray-600 mb-6">
+        <p className={styles.description}>
           主催者がクイズを開始するまで、このまましばらくお待ちください
         </p>
 
-        <div className="p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
-          <p className="text-sm text-gray-600">
+        <div className={styles.infoBox}>
+          <p className={styles.infoText}>
             このモニター画面は、ユーザー画面と同期して自動的に切り替わります
           </p>
         </div>

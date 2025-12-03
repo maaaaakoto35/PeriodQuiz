@@ -1,3 +1,4 @@
+import { getEventInfoForMonitor } from "@/app/_lib/actions/admin";
 import { createClient } from "@/app/_lib/supabase/server";
 import type { QuizScreen } from "@/app/_lib/types/quiz";
 import {
@@ -48,6 +49,8 @@ export default async function MonitorPage({ params }: MonitorPageProps) {
     .eq("event_id", eventId)
     .single();
 
+  const initialEventInfo = await getEventInfoForMonitor(eventId);
+
   if (quizControlError || !quizControl) {
     throw new Error("Failed to fetch quiz control state");
   }
@@ -57,7 +60,7 @@ export default async function MonitorPage({ params }: MonitorPageProps) {
       eventId={eventId}
       initialScreen={quizControl.current_screen as QuizScreen}
     >
-      <MonitorEventInfoProvider>
+      <MonitorEventInfoProvider initialEventInfo={initialEventInfo}>
         <MonitorSection />
       </MonitorEventInfoProvider>
     </QuizScreenProvider>

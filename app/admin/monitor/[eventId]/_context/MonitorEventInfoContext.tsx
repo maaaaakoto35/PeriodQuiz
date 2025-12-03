@@ -27,11 +27,11 @@ const MonitorEventInfoContext = createContext<
  * @returns MonitorEventInfoContextValue
  * @throws コンテキストプロバイダーの外で呼び出された場合、エラーをスロー
  */
-export function useMonitorEventInfo(): MonitorEventInfoContextValue {
+export function useMonitorEventInfoContext(): MonitorEventInfoContextValue {
   const context = useContext(MonitorEventInfoContext);
   if (!context) {
     throw new Error(
-      "useMonitorEventInfo must be used within MonitorEventInfoProvider"
+      "useMonitorEventInfoContext must be used within MonitorEventInfoProvider"
     );
   }
   return context;
