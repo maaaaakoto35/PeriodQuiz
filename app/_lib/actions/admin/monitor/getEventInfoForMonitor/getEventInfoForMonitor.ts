@@ -33,7 +33,7 @@ export async function getEventInfoForMonitor(
   // quiz_control から current_period_id と current_question_id を取得
   const { data: quizControl } = await supabase
     .from("quiz_control")
-    .select("current_period_id, current_question_id")
+    .select("current_screen, current_period_id, current_question_id")
     .eq("event_id", eventId)
     .single();
 
@@ -64,7 +64,7 @@ export async function getEventInfoForMonitor(
 
   return {
     eventName: event.name,
-    periodName: period.name,
+    periodName: quizControl.current_screen == "final_result" ? "最終結果" : period.name,
     questionNumber: count || 0,
   };
 }

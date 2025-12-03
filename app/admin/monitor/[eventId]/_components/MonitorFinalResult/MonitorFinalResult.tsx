@@ -73,7 +73,7 @@ export function MonitorFinalResult() {
   return (
     <div className={styles.root}>
       {/* ヘッダー */}
-      <MonitorHeader eventName={eventName || ""} periodName="最終結果" />
+      <MonitorHeader />
 
       {/* コンテンツエリア */}
       <div className={styles.main}>
