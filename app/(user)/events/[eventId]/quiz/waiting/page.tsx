@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { validateSession } from "@/app/_lib/actions/user";
 import { WaitingState } from "@/app/(user)/events/[eventId]/quiz/waiting/_components/WaitingState";
+import styles from "./page.module.css";
 
 type PageProps = {
   params: Promise<{
@@ -26,24 +27,8 @@ export default async function WaitingPage({ params }: PageProps) {
   const { user } = session;
 
   return (
-    <main
-      className="
-      flex flex-col items-center justify-center
-      min-h-screen
-      p-4
-      bg-gradient-to-br from-blue-50 to-indigo-100
-    "
-    >
-      <div
-        className="
-        w-full max-w-md
-        p-8 space-y-6
-        bg-white rounded-lg shadow-lg
-        text-center
-      "
-      >
-        <WaitingState user={user} />
-      </div>
-    </main>
+    <div className={styles.root}>
+      <WaitingState user={user} />
+    </div>
   );
 }

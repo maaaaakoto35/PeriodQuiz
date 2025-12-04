@@ -1,0 +1,75 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+}
+
+.eventHeader {
+  margin-bottom: 1rem;
+}
+
+.contentCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 32rem;
+  gap: 1rem;
+}
+
+.questionSection {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.choicesSection {
+  width: 100%;
+}
+
+.errorSection {
+  width: 100%;
+  padding: 0.75rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  background-color: #fef2f2;
+  border-top: 1px solid #fecaca;
+  font-size: 0.875rem;
+  color: #b91c1c;
+}
+
+.submitSection {
+  width: 100%;
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: none;
+  cursor: pointer;
+}
+
+.submitButton:enabled {
+  background-color: #004cff;
+  color: #ffffff;
+}
+
+.submitButton:enabled:active {
+  transform: scale(0.95);
+}
+
+.submitButton:disabled {
+  background-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}

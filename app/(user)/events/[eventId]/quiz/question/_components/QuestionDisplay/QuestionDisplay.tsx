@@ -1,12 +1,13 @@
 "use client";
 
-import { useQuestionAnswer } from "../_hooks/useQuestionAnswer";
+import { useQuestionAnswer } from "../../_hooks/useQuestionAnswer";
+import { EventNameHeader } from "../../../_components/EventNameHeader";
+import { QuestionContent } from "../../../_components/QuestionContent";
 import {
-  EventNameHeader,
-  QuestionContent,
   ChoiceButtonGroup,
   type Choice,
-} from "../../_components";
+} from "../../../_components/ChoiceButtonGroup";
+import styles from "./QuestionDisplay.module.css";
 
 interface QuestionDisplayProps {
   eventId: number;
@@ -41,74 +42,35 @@ export function QuestionDisplay({
   };
 
   return (
-    <div
-      className="
-      flex flex-col items-center justify-center
-      w-full h-screen
-      p-4
-      bg-cover bg-center bg-no-repeat
-    "
-      style={{
-        backgroundImage: "url('/quiz_background.jpeg')",
-      }}
-    >
-      {/* イベント名 */}
-      <EventNameHeader />
-
+    <div className={styles.wrapper}>
       {/* メインコンテンツエリア */}
-      <div
-        className="
-        flex flex-col items-center justify-center
-        w-full max-w-lg
-        bg-white rounded-2xl
-        shadow-2xl overflow-hidden
-        backdrop-blur-sm
-      "
-      >
+      <div className={styles.contentCard}>
         {/* 問題内容 */}
-        <div className="w-full p-6 space-y-4">
+        <div className={styles.questionSection}>
           <QuestionContent text={questionText} imageUrl={questionImageUrl} />
         </div>
 
         {/* 選択肢グループ */}
-        <div className="w-full p-6 bg-gray-50">
+        <div className={styles.choicesSection}>
           <ChoiceButtonGroup
             choices={choices}
             selectedChoiceId={selectedChoiceId}
             isAnswered={isAnswered}
             onSelectChoice={selectChoice}
+            isShowImageUrl={!questionImageUrl}
           />
         </div>
 
         {/* エラー表示 */}
-        {error && (
-          <div
-            className="
-            w-full p-3 px-6
-            bg-red-50 border-t border-red-200
-            text-sm text-red-700
-          "
-          >
-            {error}
-          </div>
-        )}
+        {error && <div className={styles.errorSection}>{error}</div>}
 
         {/* 送信ボタン */}
         {!isAnswered && (
-          <div className="w-full p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-t">
+          <div className={styles.submitSection}>
             <button
               onClick={handleSubmit}
               disabled={!selectedChoiceId || isSubmitting}
-              className={`
-                w-full py-4 px-6
-                rounded-xl font-bold text-lg
-                transition-all duration-200 shadow-md
-                ${
-                  selectedChoiceId && !isSubmitting
-                    ? "bg-blue-500 text-white hover:bg-blue-600 active:scale-95"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }
-              `}
+              className={styles.submitButton}
             >
               {isSubmitting ? "送信中..." : "回答する"}
             </button>

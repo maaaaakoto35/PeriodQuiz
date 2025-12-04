@@ -20,6 +20,7 @@ export type ResetEventResult =
  * 2. quiz_control を更新 (current_screen = 'waiting', current_period_id = null, current_question_id = null)
  * 3. question_displays を全削除
  * 4. answers を全削除
+ * 5. users を全削除
  *
  * @param eventId - リセット対象のイベントID
  * @returns 成功/失敗結果
@@ -115,6 +116,19 @@ export async function resetEvent(eventId: number): Promise<ResetEventResult> {
           error: `回答データの削除に失敗しました: ${answerError.message}`,
         };
       }
+    }
+
+    // 4. users を全削除
+    const { error: usersDeleteError } = await supabase
+      .from('users')
+      .delete()
+      .eq('event_id', eventId);
+
+    if (usersDeleteError) {
+      return {
+        success: false,
+        error: `ユーザーデータの削除に失敗しました: ${usersDeleteError.message}`,
+      };
     }
 
     return {

@@ -34,7 +34,7 @@ export function CurrentStateDisplay({
 
   const handleReset = async () => {
     const message =
-      "問題表示の記録とユーザーの回答データが全て削除されます。\nリセットしてもよろしいですか？";
+      "問題表示の記録とユーザーの回答データ、登録したユーザーが全て削除されます。\nリセットしてもよろしいですか？";
 
     if (!window.confirm(message)) {
       return;

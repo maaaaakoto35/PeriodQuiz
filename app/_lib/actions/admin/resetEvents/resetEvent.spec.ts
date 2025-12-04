@@ -65,6 +65,7 @@ describe('resetEvent', () => {
             return {
               select: vi.fn().mockReturnThis(),
               eq: vi.fn().mockResolvedValue({ data: mockUsers, error: null }),
+              delete: vi.fn().mockReturnThis(),
             };
           }
           if (table === 'answers') {
@@ -116,7 +117,8 @@ describe('resetEvent', () => {
           if (table === 'users') {
             return {
               select: vi.fn().mockReturnThis(),
-              eq: vi.fn().mockResolvedValue({ data: mockUsers, error: null }),
+              eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+              delete: vi.fn().mockReturnThis(),
             };
           }
           if (table === 'answers') {
@@ -173,6 +175,7 @@ describe('resetEvent', () => {
             return {
               select: vi.fn().mockReturnThis(),
               eq: vi.fn().mockResolvedValue({ data: [], error: null }),
+              delete: vi.fn().mockReturnThis(),
             };
           }
           return {};
@@ -189,9 +192,9 @@ describe('resetEvent', () => {
       expect(result).toEqual({
         success: true,
       });
-      // answers は呼ばれないはず
+      // answers と users削除は呼ばれないはず
       const calls = mockSupabase.from.mock.calls.map((c: any[]) => c[0]);
-      expect(calls).not.toContain('answers');
+      expect(calls.filter((c: string) => c === 'answers')).toHaveLength(0);
     });
   });
 
@@ -397,6 +400,64 @@ describe('resetEvent', () => {
       expect(result).toEqual({
         success: false,
         error: '回答データの削除に失敗しました: Delete failed',
+      });
+    });
+
+    it('ユーザーデータの削除に失敗した場合、エラーを返すこと', async () => {
+      const mockPeriods = [{ id: 1 }];
+      const mockUsers = [{ id: 'user1' }];
+
+      const mockSupabase = {
+        from: vi.fn((table: string) => {
+          if (table === 'quiz_control') {
+            return {
+              update: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockResolvedValue({ error: null }),
+            };
+          }
+          if (table === 'periods') {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockResolvedValue({ data: mockPeriods, error: null }),
+            };
+          }
+          if (table === 'question_displays') {
+            return {
+              delete: vi.fn().mockReturnThis(),
+              in: vi.fn().mockResolvedValue({ error: null }),
+            };
+          }
+          if (table === 'users') {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockResolvedValue({ data: mockUsers, error: null }),
+              delete: vi.fn().mockReturnValue({
+                eq: vi.fn().mockResolvedValue({
+                  error: { message: 'Delete failed' },
+                }),
+              }),
+            };
+          }
+          if (table === 'answers') {
+            return {
+              delete: vi.fn().mockReturnThis(),
+              in: vi.fn().mockResolvedValue({ error: null }),
+            };
+          }
+          return {};
+        }),
+      };
+
+      vi.mocked(checkAdminAuth).mockResolvedValue({
+        authenticated: true,
+      });
+      vi.mocked(createAdminClient).mockReturnValue(mockSupabase as any);
+
+      const result = await resetEvent(mockEventId);
+
+      expect(result).toEqual({
+        success: false,
+        error: 'ユーザーデータの削除に失敗しました: Delete failed',
       });
     });
 

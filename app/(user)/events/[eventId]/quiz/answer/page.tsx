@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { validateSession, getAnswerResult } from "@/app/_lib/actions/user";
-import { AnswerDisplay } from "./_components/AnswerDisplay";
+import { AnswerDisplay } from "./_components";
 
 type PageProps = {
   params: Promise<{
@@ -52,19 +52,11 @@ export default async function AnswerPage({ params }: PageProps) {
   const { data } = result;
 
   return (
-    <div
-      className="
-      flex items-center justify-center
-      w-full min-h-screen
-      bg-gray-50 p-4
-    "
-    >
-      <AnswerDisplay
-        questionText={data.questionText}
-        questionImageUrl={data.questionImageUrl}
-        choices={data.choices}
-        userAnswer={data.userAnswer}
-      />
-    </div>
+    <AnswerDisplay
+      questionText={data.questionText}
+      questionImageUrl={data.questionImageUrl}
+      choices={data.choices}
+      userAnswer={data.userAnswer}
+    />
   );
 }

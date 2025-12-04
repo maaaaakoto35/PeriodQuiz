@@ -1,6 +1,7 @@
 "use client";
 
-import { useSessionContext } from "../_context/SessionContext";
+import { useSessionContext } from "../../_context/SessionContext";
+import styles from "./EventNameHeader.module.css";
 
 /**
  * イベント名ヘッダーコンポーネント
@@ -10,15 +11,8 @@ export function EventNameHeader() {
   const { eventName } = useSessionContext();
 
   return (
-    <div className="mb-4">
-      <h1
-        className="
-        text-2xl font-bold text-white
-        drop-shadow-lg
-      "
-      >
-        {eventName}
-      </h1>
+    <div>
+      <h1 className={styles.title}>{eventName}</h1>
     </div>
   );
 }

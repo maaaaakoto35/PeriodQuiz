@@ -1,0 +1,82 @@
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: #4b5563;
+}
+
+.nickname {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.waitingBox {
+  padding: 1.5rem;
+  background-color: #eff6ff;
+  border-radius: 0.5rem;
+  border: 2px solid #bfdbfe;
+}
+
+.pulseContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.pulseDot {
+  width: 4rem;
+  height: 4rem;
+  background-color: #2563eb;
+  border-radius: 50%;
+  opacity: 0.75;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.waitingTitle {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.waitingDescription {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #4b5563;
+}
+
+.hints {
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.hints p {
+  margin: 0;
+}

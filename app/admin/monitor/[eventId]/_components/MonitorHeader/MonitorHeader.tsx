@@ -9,8 +9,6 @@ import styles from "./MonitorHeader.module.css";
 export function MonitorHeader() {
   const { eventInfo } = useMonitorEventInfoContext();
 
-  console.log("MonitorHeader render", { eventInfo });
-
   return (
     <div className={styles.root}>
       <div>

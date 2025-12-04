@@ -1,4 +1,5 @@
-import { ChoiceButton } from "./ChoiceButton";
+import { ChoiceButton } from "../ChoiceButton";
+import styles from "./ChoiceButtonGroup.module.css";
 
 export interface Choice {
   id: number;
@@ -17,6 +18,7 @@ interface ChoiceButtonGroupProps {
   // answer画面用（オプション）
   showCorrectness?: boolean;
   userSelectedChoiceId?: number | null;
+  isShowImageUrl: boolean;
 }
 
 /**
@@ -32,9 +34,10 @@ export function ChoiceButtonGroup({
   onSelectChoice,
   showCorrectness = false,
   userSelectedChoiceId,
+  isShowImageUrl,
 }: ChoiceButtonGroupProps) {
   return (
-    <div className="w-full grid grid-cols-2 gap-4">
+    <div className={styles.container}>
       {choices
         .sort((a, b) => a.orderNum - b.orderNum)
         .map((choice, index) => (
@@ -42,7 +45,7 @@ export function ChoiceButtonGroup({
             key={choice.id}
             id={choice.id}
             text={choice.text}
-            imageUrl={choice.imageUrl}
+            imageUrl={isShowImageUrl ? choice.imageUrl : null}
             buttonNumber={index + 1}
             isSelected={
               showCorrectness
