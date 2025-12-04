@@ -38,7 +38,7 @@ export function SessionStatusNotification() {
   // エラーがある場合はエラー表示優先
   if (heartbeatError) {
     return (
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed top-2 left-2 z-50">
         <div className="bg-white rounded-lg p-3 shadow-sm border border-slate-200 max-w-xs">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">⚠️</span>
@@ -56,7 +56,7 @@ export function SessionStatusNotification() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed top-2 left-2 z-50">
       <div className="bg-white rounded-lg p-2.5 shadow-sm border border-slate-200 flex items-center gap-2 max-w-xs">
         <div
           className={`w-2.5 h-2.5 rounded-full ${style.dot} animate-pulse flex-shrink-0`}

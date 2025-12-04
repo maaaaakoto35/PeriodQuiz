@@ -1,0 +1,16 @@
+.root {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.img {
+  height: 100px;
+  object-fit: contain;
+
+  @media (max-width: 460px) {
+    height: 60px;
+  }
+}

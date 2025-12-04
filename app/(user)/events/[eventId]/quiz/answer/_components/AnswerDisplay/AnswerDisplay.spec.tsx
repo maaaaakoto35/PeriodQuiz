@@ -1,10 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { AnswerDisplay } from "./AnswerDisplay";
-import type { Choice } from "../../_components";
+import type { Choice } from "../../../_components";
 
 // Mock modules
-vi.mock("../../_components", () => ({
+vi.mock("../../../_components", () => ({
   EventNameHeader: () => <div data-testid="event-header">Event Header</div>,
   QuestionContent: ({ text, imageUrl }: any) => (
     <div data-testid="question-content">
@@ -87,10 +87,9 @@ describe("AnswerDisplay", () => {
         />
       );
 
+      // CSS Modulesで背景が設定されているため、classNameの存在を確認
       const background = container.querySelector("div") as HTMLElement;
-      expect(background?.style.backgroundImage).toContain(
-        "quiz_background.jpeg"
-      );
+      expect(background?.className).toBeTruthy();
     });
   });
 

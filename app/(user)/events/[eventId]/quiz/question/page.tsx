@@ -1,6 +1,7 @@
 import { getQuestionWithChoices } from "@/app/_lib/actions/user";
 import { getQuizStatus } from "@/app/_lib/actions/user";
 import { QuestionDisplay } from "./_components/QuestionDisplay";
+import styles from "./page.module.css";
 
 interface QuestionPageProps {
   params: Promise<{ eventId: string }>;
@@ -19,16 +20,9 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
   const statusResult = await getQuizStatus(eventId);
   if (!statusResult.success) {
     return (
-      <div
-        className="
-        flex flex-col items-center justify-center
-        w-full h-screen
-        bg-gray-50
-        space-y-4
-      "
-      >
-        <p className="text-lg font-semibold text-red-600">エラー</p>
-        <p className="text-gray-600">クイズ状態の取得に失敗しました</p>
+      <div className={styles.errorContainer}>
+        <p className={styles.errorTitle}>エラー</p>
+        <p className={styles.errorMessage}>クイズ状態の取得に失敗しました</p>
       </div>
     );
   }
@@ -38,16 +32,9 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
 
   if (!result.success) {
     return (
-      <div
-        className="
-        flex flex-col items-center justify-center
-        w-full h-screen
-        bg-gray-50
-        space-y-4
-      "
-      >
-        <p className="text-lg font-semibold text-red-600">エラー</p>
-        <p className="text-gray-600">
+      <div className={styles.errorContainer}>
+        <p className={styles.errorTitle}>エラー</p>
+        <p className={styles.errorMessage}>
           {result.error || "問題の読み込みに失敗しました"}
         </p>
       </div>
@@ -57,13 +44,7 @@ export default async function QuestionPage({ params }: QuestionPageProps) {
   const { data } = result;
 
   return (
-    <div
-      className="
-      flex items-center justify-center
-      w-full min-h-screen
-      bg-gray-50 p-4
-    "
-    >
+    <div className={styles.container}>
       <QuestionDisplay
         eventId={eventId}
         questionText={data.text}

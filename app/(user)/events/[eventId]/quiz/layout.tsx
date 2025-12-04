@@ -4,6 +4,8 @@ import { validateSession } from "@/app/_lib/actions/user";
 import { createClient } from "@/app/_lib/supabase/server";
 import { QuizClientLayout } from "./_components/QuizClientLayout";
 import type { QuizScreen } from "@/app/_lib/types/quiz";
+import styles from "./layout.module.css";
+import { QuizHeader } from "@/app/(user)/events/[eventId]/quiz/_components";
 
 interface QuizLayoutProps {
   children: ReactNode;
@@ -50,7 +52,10 @@ export default async function QuizLayout({ children }: QuizLayoutProps) {
       initialUserId={session.user.id}
       initialCurrentScreen={currentScreen}
     >
-      {children}
+      <div className={styles.container}>
+        <QuizHeader />
+        {children}
+      </div>
     </QuizClientLayout>
   );
 }
