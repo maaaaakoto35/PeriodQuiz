@@ -59,3 +59,27 @@
   line-height: 1.25rem;
   color: #4b5563;
 }
+
+.userCountBox {
+  padding: 1.5rem 2rem;
+  background-color: #fef3c7;
+  border-radius: 0.5rem;
+  border: 2px solid #fcd34d;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.userCountLabel {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #78350f;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.userCountValue {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: bold;
+  color: #d97706;
+}
