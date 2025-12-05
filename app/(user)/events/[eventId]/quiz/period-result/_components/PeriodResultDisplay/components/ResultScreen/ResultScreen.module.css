@@ -1,0 +1,74 @@
+/* ResultScreen styles */
+.header {
+  background: linear-gradient(
+    to right,
+    rgb(37, 99, 235),
+    rgb(59, 130, 246),
+    rgb(96, 165, 250)
+  );
+  padding: 1rem 0;
+  color: white;
+  text-align: center;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  border-bottom-width: 4px;
+  border-bottom-color: rgb(253, 224, 71);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.headerTitle {
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 1rem;
+  }
+}
+
+.periodName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: rgb(254, 243, 199);
+
+  @media (max-width: 460px) {
+    font-size: 0.875rem;
+  }
+}
+
+.content {
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+
+  @media (max-width: 460px) {
+    padding: 1rem;
+  }
+}
+
+.contentTitle {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: rgb(17, 24, 39);
+  margin-bottom: 1.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.footer {
+  background: linear-gradient(to right, rgb(37, 99, 235), rgb(59, 130, 246));
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  color: white;
+  text-align: center;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 0.625;
+}

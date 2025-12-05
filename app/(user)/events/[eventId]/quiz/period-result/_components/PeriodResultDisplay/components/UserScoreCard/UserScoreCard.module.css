@@ -1,0 +1,138 @@
+/* UserScoreCard styles */
+.card {
+  border-radius: 1rem;
+  border-width: 4px;
+  padding: 2rem;
+
+  @media (max-width: 460px) {
+    padding: 1rem;
+  }
+}
+
+.card.champion {
+  background: linear-gradient(
+    to bottom right,
+    rgb(254, 252, 232),
+    rgb(254, 250, 204)
+  );
+  border-color: rgb(250, 204, 21);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.card.normal {
+  background: linear-gradient(
+    to bottom right,
+    rgb(240, 249, 255),
+    rgb(238, 242, 255)
+  );
+  border-color: rgb(147, 197, 253);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.cardContent {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 460px) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.label {
+  color: rgb(75, 85, 99);
+  font-weight: 0.625;
+  font-size: 0.875rem;
+}
+
+.rankValue {
+  font-size: 2.25rem;
+  font-weight: black;
+  margin-top: 0.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 1.5rem;
+  }
+}
+
+.rankValue.championText {
+  color: rgb(180, 83, 9);
+}
+
+.rankValue.normalText {
+  color: rgb(37, 99, 235);
+}
+
+.nickname {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: rgb(17, 24, 39);
+  margin-top: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 460px) {
+    font-size: 1.25rem;
+  }
+}
+
+.correctCount {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: rgb(17, 24, 39);
+  margin-top: 0.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 1rem;
+  }
+}
+
+.totalTime {
+  font-size: 1.875rem;
+  font-weight: bold;
+  color: rgb(17, 24, 39);
+  margin-top: 0.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 1rem;
+  }
+}
+
+.championMessage {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(to right, rgb(253, 224, 71), rgb(253, 163, 102));
+  border-radius: 0.75rem;
+  border-width: 4px;
+  border-color: rgb(234, 179, 8);
+  text-align: center;
+
+  @media (max-width: 460px) {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+}
+
+.championText2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: rgb(113, 63, 18);
+
+  @media (max-width: 460px) {
+    font-size: 1rem;
+  }
+}
+
+.congratulations {
+  font-size: 1.125rem;
+  font-weight: 0.625;
+  color: rgb(120, 53, 15);
+  margin-top: 0.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 0.875rem;
+  }
+}

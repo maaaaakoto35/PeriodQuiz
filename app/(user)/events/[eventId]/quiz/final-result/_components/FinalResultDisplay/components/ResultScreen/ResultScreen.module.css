@@ -1,0 +1,172 @@
+/* Header */
+.header {
+  background: linear-gradient(to right, #9333ea, #a855f7, #c084fc);
+  padding: 1.5rem 2rem;
+  color: white;
+  text-align: center;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  border-bottom: 4px solid #facc15;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 460px) {
+    padding: 1rem;
+  }
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 460px) {
+    font-size: 1rem;
+  }
+}
+
+.eventName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #fef3c7;
+
+  @media (max-width: 460px) {
+    font-size: 0.875rem;
+  }
+}
+
+/* Main content area */
+.content {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+
+  @media (max-width: 460px) {
+    padding: 1rem;
+  }
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 1rem;
+
+  @media (max-width: 460px) {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.rankMedal {
+  width: 4rem;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 2rem;
+}
+
+.nickname {
+  flex-grow: 1;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.correctBadge {
+  background-color: #a855f7;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.timeDisplay {
+  width: 6rem;
+  text-align: right;
+  flex-shrink: 0;
+  color: #1f2937;
+  font-weight: bold;
+}
+
+/* Divider */
+.divider {
+  margin: 1.5rem 0;
+  border-top: 2px solid #d1d5db;
+}
+
+/* Period champions section */
+.periodChampionsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .periodChampionsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.periodChampionCard {
+  background: linear-gradient(to right, #fef3c7, #fef08a);
+  border-radius: 0.75rem;
+  border: 2px solid #fcd34d;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+
+  @media (max-width: 460px) {
+    padding: 1rem;
+  }
+}
+
+.periodChampionCard:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.periodChampionCardTitle {
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #78350f;
+  margin-bottom: 0.75rem;
+}
+
+.periodChampionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.periodChampionItem:last-child {
+  margin-bottom: 0;
+}
+
+.periodChampionLabel {
+  color: #374151;
+  font-weight: 600;
+}
+
+.periodChampionValue {
+  color: #b45309;
+  font-weight: bold;
+}
+
+.periodChampionCorrectCount {
+  font-size: 1.125rem;
+  color: #111827;
+}
+
+/* Footer */
+.footer {
+  background: linear-gradient(to right, #7c3aed, #a855f7);
+  padding: 1rem 2rem;
+  color: white;
+  text-align: center;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}

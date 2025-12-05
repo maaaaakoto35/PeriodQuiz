@@ -103,14 +103,7 @@ export async function BreakScreen({ eventId }: BreakScreenProps) {
     <div
       className="
       flex items-center justify-center h-screen
-      relative overflow-hidden
-    "
-      style={{
-        backgroundImage: "url('/quiz_background.jpeg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
+      relative overflow-hidden"
     >
       <BreakScreenClient images={images} />
     </div>
