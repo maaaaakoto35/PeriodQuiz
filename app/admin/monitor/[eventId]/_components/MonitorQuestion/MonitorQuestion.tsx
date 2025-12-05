@@ -6,7 +6,6 @@ import type { MonitorAnswerData } from "@/app/_lib/actions/admin";
 import { AnswerContent, QuestionPanel } from "./components";
 import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
 import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
-import { useMonitorEventInfoContext } from "@/app/admin/monitor/[eventId]/_context/MonitorEventInfoContext";
 
 import styles from "./MonitorAnswer.module.css";
 
