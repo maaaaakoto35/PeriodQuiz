@@ -31,7 +31,7 @@ export function BreakScreenClient({ images }: BreakScreenClientProps) {
       {/* メインコンテンツ */}
       <div
         className="
-        relative z-10 flex flex-col items-center justify-center h-full
+        relative z-10 flex flex-col items-center justify-start h-full
         px-4 py-8
       "
       >
@@ -58,7 +58,7 @@ export function BreakScreenClient({ images }: BreakScreenClientProps) {
             {/* 画像表示エリア */}
             <div
               className="
-              relative h-[400px] overflow-hidden
+              relative h-[200px] overflow-hidden
               rounded-lg bg-gray-100
             "
             >

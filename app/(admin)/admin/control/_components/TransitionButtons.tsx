@@ -25,6 +25,9 @@ export function TransitionButtons({
   return (
     <div className="rounded-lg border border-gray-200 bg-white p-6">
       <h2 className="mb-4 text-lg font-semibold text-gray-900">画面遷移</h2>
+      <p className="mb-6 text-xs text-gray-600">
+        ピリオド結果画面は20秒間、最終結果画面は120秒間「モニターをご覧ください！」を表示します
+      </p>
 
       <div className="space-y-2">
         {ALL_SCREENS.map((nextScreen) => {
