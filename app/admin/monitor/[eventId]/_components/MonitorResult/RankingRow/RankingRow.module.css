@@ -99,3 +99,25 @@
   composes: time;
   color: #f9dc69;
 }
+
+.revealButton {
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.revealButton:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.revealButton:active {
+  transform: scale(0.95);
+}

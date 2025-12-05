@@ -5,7 +5,8 @@ import { getFinalResultForMonitor } from "@/app/_lib/actions/admin";
 import type { FinalResultDataForMonitor } from "@/app/_lib/actions/admin";
 import { MonitorHeader } from "@/app/admin/monitor/[eventId]/_components/MonitorHeader";
 import { useQuizScreenContext } from "@/app/admin/monitor/[eventId]/_context/QuizScreenContext";
-import { RankingRow, Notice } from "../MonitorResult";
+import { Notice } from "../MonitorResult";
+import { FinalRankingList } from "./FinalRankingList";
 import styles from "./MonitorFinalResult.module.css";
 
 /**
@@ -67,9 +68,6 @@ export function MonitorFinalResult() {
     );
   }
 
-  const rankings = data.ranking;
-  const eventName = data.eventName;
-
   return (
     <div className={styles.root}>
       {/* ヘッダー */}
@@ -79,21 +77,7 @@ export function MonitorFinalResult() {
       <div className={styles.main}>
         {/* 左側: ランキングリスト */}
         <div className={styles.rankingList}>
-          {rankings.length > 0 ? (
-            rankings.map((entry) => (
-              <RankingRow
-                key={`${entry.rank}-${entry.userId}`}
-                rank={entry.rank}
-                nickname={entry.nickname}
-                correctCount={entry.correctCount}
-                time={entry.totalResponseTimeMs / 1000}
-              />
-            ))
-          ) : (
-            <div className={styles.emptyState}>
-              ランキングデータがありません
-            </div>
-          )}
+          <FinalRankingList rankings={data.ranking} />
         </div>
 
         {/* 右側: 「個人成績ランキング」通知 */}
