@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import styles from "./RankingRow.module.css";
 
 interface RankingRowProps {
@@ -20,6 +21,8 @@ export function RankingRow({
   correctCount,
   time,
 }: RankingRowProps) {
+  const [isRevealed, setIsRevealed] = useState(false);
+  const isTopThree = rank <= 3;
   const isFirstPlace = rank === 1;
   const rootClassName = isFirstPlace ? styles.rootRank1 : styles.rootRank2Plus;
   const rankClassName = isFirstPlace ? styles.rankRank1 : styles.rank;
@@ -34,7 +37,18 @@ export function RankingRow({
       <div className={rankClassName}>{rank}</div>
 
       {/* ニックネーム */}
-      <div className={styles.name}>{nickname}</div>
+      <div className={styles.name}>
+        {isTopThree && !isRevealed ? (
+          <button
+            onClick={() => setIsRevealed(true)}
+            className={styles.revealButton}
+          >
+            表示
+          </button>
+        ) : (
+          nickname
+        )}
+      </div>
 
       {/* 正解数 */}
       <div className={correctCountClassName}>{correctCount}問</div>
