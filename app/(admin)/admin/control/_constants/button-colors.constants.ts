@@ -24,6 +24,12 @@ export const BUTTON_COLORS: Record<QuizScreen, ButtonColorScheme> = {
     hover: 'hover:bg-amber-100 hover:border-amber-400',
     text: 'text-amber-900',
   },
+  answer_check: {
+    bg: 'bg-teal-50',
+    border: 'border-teal-300',
+    hover: 'hover:bg-teal-100 hover:border-teal-400',
+    text: 'text-teal-900',
+  },
   answer: {
     bg: 'bg-emerald-50',
     border: 'border-emerald-300',

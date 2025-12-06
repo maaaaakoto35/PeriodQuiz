@@ -2,7 +2,7 @@
  * Quiz related type definitions
  */
 
-export type QuizScreen = 'waiting' | 'question' | 'answer' | 'break' | 'period_result' | 'final_result';
+export type QuizScreen = 'waiting' | 'question' | 'answer_check' | 'answer' | 'break' | 'period_result' | 'final_result';
 
 export interface QuizControl {
   id: number;

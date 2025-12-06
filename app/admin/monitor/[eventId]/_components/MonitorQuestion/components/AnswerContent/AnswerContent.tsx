@@ -7,6 +7,7 @@ interface AnswerContentProps {
   data: MonitorAnswerData;
   isAnswer?: boolean;
   correctChoiceId?: number;
+  showSelectionCount?: boolean;
 }
 
 /**
@@ -16,6 +17,7 @@ export function AnswerContent({
   data,
   isAnswer,
   correctChoiceId,
+  showSelectionCount,
 }: AnswerContentProps) {
   return (
     <div className={styles.root}>
@@ -38,7 +40,7 @@ export function AnswerContent({
               choiceIndex={index}
               choiceText={choice.text}
               choiceImageUrl={data.questionImageUrl ? null : choice.imageUrl}
-              selectionCount={!!isAnswer ? choice.selectionCount || 0 : null}
+              selectionCount={(showSelectionCount ?? !!isAnswer) ? choice.selectionCount || 0 : null}
               isCorrect={!!isAnswer && choice.id === correctChoiceId}
               rowIndex={0}
             />
@@ -53,7 +55,7 @@ export function AnswerContent({
               choiceIndex={index + 2}
               choiceText={choice.text}
               choiceImageUrl={data.questionImageUrl ? null : choice.imageUrl}
-              selectionCount={!!isAnswer ? choice.selectionCount || 0 : null}
+              selectionCount={(showSelectionCount ?? !!isAnswer) ? choice.selectionCount || 0 : null}
               isCorrect={!!isAnswer && choice.id === correctChoiceId}
               rowIndex={1}
             />

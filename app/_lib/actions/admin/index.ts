@@ -2,6 +2,8 @@ export { resetEvent } from './resetEvents';
 export type { ResetEventResult } from './resetEvents';
 export { updateQuizControl } from './updateQuizControl';
 export type { UpdateQuizControlInput, UpdateQuizControlResult } from './updateQuizControl';
+export { updateBgmEnabled } from './updateBgmEnabled/updateBgmEnabled';
+export type { UpdateBgmEnabledInput, UpdateBgmEnabledResult } from './updateBgmEnabled/updateBgmEnabled';
 
 export { getQuestionForMonitor } from './monitor/getQuestionForMonitor';
 export type { GetQuestionWithChoicesResult } from '@/app/_lib/actions/user/getQuestionWithChoices';

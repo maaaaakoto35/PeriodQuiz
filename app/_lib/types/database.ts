@@ -363,6 +363,7 @@ export type Database = {
       }
       quiz_control: {
         Row: {
+          bgm_enabled: boolean
           current_period_id: number | null
           current_question_id: number | null
           current_screen: string
@@ -373,6 +374,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bgm_enabled?: boolean
           current_period_id?: number | null
           current_question_id?: number | null
           current_screen?: string
@@ -383,6 +385,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bgm_enabled?: boolean
           current_period_id?: number | null
           current_question_id?: number | null
           current_screen?: string

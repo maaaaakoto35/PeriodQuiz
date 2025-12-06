@@ -14,6 +14,7 @@ interface ChoiceButtonProps {
   userSelected?: boolean;
   showCorrectness?: boolean;
   selectionCount?: number; // answer画面：この選択肢を選んだ人数
+  showSelectionCount?: boolean; // answer_check画面：正解を表示せず回答数のみ表示
 }
 
 /**
@@ -34,6 +35,7 @@ export function ChoiceButton({
   userSelected,
   showCorrectness,
   selectionCount,
+  showSelectionCount,
 }: ChoiceButtonProps) {
   // ボタンのスタイルを決定
   let buttonClass = styles.button;
@@ -97,8 +99,8 @@ export function ChoiceButton({
         <div className={styles.incorrectBadgeText}>不正解</div>
       )}
 
-      {/* 選択数表示（answer画面用） */}
-      {showCorrectness && selectionCount !== undefined && (
+      {/* 選択数表示（answer/answer_check画面用） */}
+      {(showCorrectness || showSelectionCount) && selectionCount !== undefined && (
         <div className={styles.selectionCount}>{selectionCount}人</div>
       )}
 

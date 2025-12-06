@@ -12,6 +12,7 @@ import { CurrentStateDisplay } from "./CurrentStateDisplay";
 import { TransitionButtons } from "./TransitionButtons";
 import { ErrorAlert } from "./ErrorAlert";
 import { RankingsPanel } from "./RankingsPanel";
+import { BGMToggle } from "./BGMToggle";
 
 interface QuizControlPanelProps {
   eventId: number;
@@ -96,10 +97,13 @@ export function QuizControlPanel({
             currentScreen: "waiting",
             currentPeriodId: null,
             currentQuestionId: null,
+            bgmEnabled: state.bgmEnabled,
           });
         }}
         isUpdating={isUpdating}
       />
+
+      <BGMToggle eventId={eventId} initialEnabled={state.bgmEnabled} />
 
       {error && <ErrorAlert message={error} />}
 

@@ -86,6 +86,7 @@ export function useQuizControlTransition({
           currentScreen: result.data.currentScreen,
           currentPeriodId: result.data.currentPeriodId,
           currentQuestionId: result.data.currentQuestionId,
+          bgmEnabled: result.data.bgmEnabled,
           periodName,
           questionText,
         });

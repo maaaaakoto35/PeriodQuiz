@@ -330,7 +330,7 @@ describe('useQuizControlTransition', () => {
       );
 
       const transitions = result.current.getPossibleTransitions();
-      expect(transitions).toContain('answer');
+      expect(transitions).toContain('answer_check');
     });
 
     it('stateがnullの場合、空配列を返す', () => {

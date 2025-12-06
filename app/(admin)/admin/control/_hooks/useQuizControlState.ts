@@ -7,6 +7,7 @@ export interface QuizControlState {
   currentScreen: QuizScreen;
   currentPeriodId: number | null;
   currentQuestionId: number | null;
+  bgmEnabled: boolean;
   periodName?: string;
   questionText?: string;
 }

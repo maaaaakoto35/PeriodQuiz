@@ -78,6 +78,7 @@ async function getQuizControlData(eventId: number): Promise<{
       currentScreen: quizControl.current_screen as QuizScreen,
       currentPeriodId: quizControl.current_period_id,
       currentQuestionId: quizControl.current_question_id,
+      bgmEnabled: quizControl.bgm_enabled,
       periodName,
       questionText,
     };
