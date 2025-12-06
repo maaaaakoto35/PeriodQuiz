@@ -21,6 +21,7 @@ export type UpdateQuizControlResult =
         currentScreen: QuizScreen;
         currentPeriodId: number | null;
         currentQuestionId: number | null;
+        bgmEnabled: boolean;
       };
     }
   | {
@@ -142,6 +143,7 @@ export async function updateQuizControl(
           updateData.current_period_id ?? currentControl.current_period_id,
         currentQuestionId:
           updateData.current_question_id ?? currentControl.current_question_id,
+        bgmEnabled: currentControl.bgm_enabled,
       },
     };
   } catch (error) {
