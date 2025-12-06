@@ -19,6 +19,7 @@ interface ChoiceButtonGroupProps {
   showCorrectness?: boolean;
   userSelectedChoiceId?: number | null;
   isShowImageUrl: boolean;
+  showSelectionCount?: boolean; // answer_check画面：正解を表示せず回答数のみ表示
 }
 
 /**
@@ -35,6 +36,7 @@ export function ChoiceButtonGroup({
   showCorrectness = false,
   userSelectedChoiceId,
   isShowImageUrl,
+  showSelectionCount = false,
 }: ChoiceButtonGroupProps) {
   return (
     <div className={styles.container}>
@@ -48,7 +50,7 @@ export function ChoiceButtonGroup({
             imageUrl={isShowImageUrl ? choice.imageUrl : null}
             buttonNumber={index + 1}
             isSelected={
-              showCorrectness
+              showCorrectness || showSelectionCount
                 ? userSelectedChoiceId === choice.id
                 : selectedChoiceId === choice.id
             }
@@ -57,10 +59,11 @@ export function ChoiceButtonGroup({
             // answer画面用
             isCorrect={showCorrectness ? choice.isCorrect : undefined}
             userSelected={
-              showCorrectness ? userSelectedChoiceId === choice.id : undefined
+              showCorrectness || showSelectionCount ? userSelectedChoiceId === choice.id : undefined
             }
             showCorrectness={showCorrectness}
-            selectionCount={showCorrectness ? choice.selectionCount : undefined}
+            selectionCount={showCorrectness || showSelectionCount ? choice.selectionCount : undefined}
+            showSelectionCount={showSelectionCount}
           />
         ))}
     </div>
