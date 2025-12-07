@@ -86,6 +86,7 @@ export async function updateQuiz(input: unknown): Promise<{
       image_url: choice.imageUrl || null,
       is_correct: choice.isCorrect,
       order_num: index + 1,
+      answer_text: choice.answerText || null,
     }));
 
     const { data: choices, error: choicesError } = await supabase

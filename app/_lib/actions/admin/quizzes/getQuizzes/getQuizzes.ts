@@ -25,6 +25,7 @@ export interface ChoiceRecord {
   is_correct: boolean;
   order_num: number;
   created_at: string;
+  answer_text: string | null;
 }
 
 /**

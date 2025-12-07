@@ -8,6 +8,7 @@ export interface Choice {
   orderNum: number;
   isCorrect?: boolean;
   selectionCount?: number; // answer画面：この選択肢を選んだ人数
+  answerText?: string | null; // モニター画面の正解発表時に表示される専用テキスト
 }
 
 interface ChoiceButtonGroupProps {

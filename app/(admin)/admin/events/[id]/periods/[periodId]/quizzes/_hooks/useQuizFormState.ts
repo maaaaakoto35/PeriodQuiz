@@ -34,9 +34,10 @@ export function useQuizFormState(
       text: c.text,
       imageUrl: c.image_url || '',
       isCorrect: c.is_correct,
+      answerText: c.answer_text || '',
     })) || [
-      { text: '', imageUrl: '', isCorrect: false },
-      { text: '', imageUrl: '', isCorrect: false },
+      { text: '', imageUrl: '', isCorrect: false, answerText: '' },
+      { text: '', imageUrl: '', isCorrect: false, answerText: '' },
     ],
   });
 
@@ -68,7 +69,7 @@ export function useQuizFormState(
     if (formState.choices.length < 4) {
       setFormState((prev) => ({
         ...prev,
-        choices: [...prev.choices, { text: '', imageUrl: '', isCorrect: false }],
+        choices: [...prev.choices, { text: '', imageUrl: '', isCorrect: false, answerText: '' }],
       }));
     }
   };
