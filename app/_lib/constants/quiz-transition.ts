@@ -6,7 +6,8 @@ import { QuizScreen } from "@/app/_lib/types/quiz";
  */
 export const QUIZ_TRANSITION_RULES: Record<QuizScreen, QuizScreen[]> = {
   waiting: ["question"],
-  question: ["answer"],
+  question: ["answer_check"],
+  answer_check: ["answer"],
   answer: ["question", "break", "period_result"],
   break: ["question", "period_result"],
   period_result: ["question", "final_result"],

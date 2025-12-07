@@ -32,6 +32,9 @@ export function useScreenNavigation({
         // question/[id] ページでは current_question_id から問題を自動取得
         router.push(`/events/${eventId}/quiz/question/`);
         break;
+      case "answer_check":
+        router.push(`/events/${eventId}/quiz/answer-check/`);
+        break;
       case "answer":
         router.push(`/events/${eventId}/quiz/answer/`);
         break;

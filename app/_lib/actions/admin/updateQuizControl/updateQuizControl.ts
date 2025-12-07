@@ -21,6 +21,7 @@ export type UpdateQuizControlResult =
         currentScreen: QuizScreen;
         currentPeriodId: number | null;
         currentQuestionId: number | null;
+        bgmEnabled: boolean;
       };
     }
   | {
@@ -103,8 +104,8 @@ export async function updateQuizControl(
       updateData.question_displayed_at = new Date().toISOString();
     }
 
-    // answer画面に遷移時: question_displays.closed_at を update
-    if (nextScreen === 'answer') {
+    // answer_check画面に遷移時: question_displays.closed_at を update
+    if (nextScreen === 'answer_check') {
       const result = await handleAnswerTransition(supabase, currentControl);
       if (!result.success) {
         return {
@@ -113,6 +114,11 @@ export async function updateQuizControl(
         };
       }
       updateData.question_closed_at = new Date().toISOString();
+    }
+
+    // answer画面に遷移時: 特別な処理は不要（answer_checkで既にclosed_at設定済み）
+    if (nextScreen === 'answer') {
+      // answer_checkからanswerへの遷移では追加処理なし
     }
 
     // quiz_control を更新
@@ -137,6 +143,7 @@ export async function updateQuizControl(
           updateData.current_period_id ?? currentControl.current_period_id,
         currentQuestionId:
           updateData.current_question_id ?? currentControl.current_question_id,
+        bgmEnabled: currentControl.bgm_enabled,
       },
     };
   } catch (error) {

@@ -8,6 +8,8 @@ import { type QuizControl } from '@/app/_lib/types/quiz';
 const createMockQueryBuilder = () => ({
   select: vi.fn().mockReturnThis(),
   eq: vi.fn().mockReturnThis(),
+  order: vi.fn().mockReturnThis(),
+  limit: vi.fn().mockReturnThis(),
   single: vi.fn(),
   update: vi.fn().mockReturnThis(),
   from: vi.fn(),
@@ -20,6 +22,7 @@ const createMockSupabase = () => {
       const queryBuilder = createMockQueryBuilder();
       queryBuilder.select.mockReturnThis();
       queryBuilder.eq.mockReturnThis();
+      queryBuilder.order.mockReturnThis();
       queryBuilder.update.mockReturnThis();
       return queryBuilder;
     }),
@@ -35,6 +38,7 @@ const mockQuizControl: QuizControl = {
   current_question_id: null,
   question_displayed_at: null,
   question_closed_at: null,
+  bgm_enabled: false,
   updated_at: '2025-11-20T00:00:00Z',
 };
 
@@ -234,7 +238,7 @@ describe('updateQuizControl', () => {
       }
     });
 
-    it('問題画面から答え画面への遷移は許可される', async () => {
+    it('問題画面からアンサーチェック画面への遷移は許可される', async () => {
       const mockSupabase = createMockSupabase();
 
       vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
@@ -268,14 +272,14 @@ describe('updateQuizControl', () => {
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'answer',
+        nextScreen: 'answer_check',
       };
 
       const result = await updateQuizControl(input);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.currentScreen).toBe('answer');
+        expect(result.data.currentScreen).toBe('answer_check');
       }
     });
 
@@ -527,8 +531,8 @@ describe('updateQuizControl', () => {
     });
   });
 
-  describe('answer画面への遷移', () => {
-    it('answer画面への遷移時にhandleAnswerTransitionが呼ばれる', async () => {
+  describe('answer_check画面への遷移', () => {
+    it('answer_check画面への遷移時にhandleAnswerTransitionが呼ばれる', async () => {
       const mockSupabase = createMockSupabase();
       const handleAnswerSpy = vi
         .spyOn(handlersModule, 'handleAnswerTransition')
@@ -543,7 +547,7 @@ describe('updateQuizControl', () => {
         mockSupabase as any
       );
 
-      const answerControl: QuizControl = {
+      const answerCheckControl: QuizControl = {
         ...mockQuizControl,
         current_screen: 'question',
         current_question_id: 1,
@@ -553,7 +557,7 @@ describe('updateQuizControl', () => {
       (queryBuilder.select).mockReturnThis();
       (queryBuilder.eq).mockReturnThis();
       (queryBuilder.single).mockResolvedValue({
-        data: answerControl,
+        data: answerCheckControl,
         error: null,
       });
       (queryBuilder.update).mockReturnThis();
@@ -561,12 +565,12 @@ describe('updateQuizControl', () => {
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'answer',
+        nextScreen: 'answer_check',
       };
 
       await updateQuizControl(input);
 
-      expect(handleAnswerSpy).toHaveBeenCalledWith(mockSupabase, answerControl);
+      expect(handleAnswerSpy).toHaveBeenCalledWith(mockSupabase, answerCheckControl);
     });
 
     it('handleAnswerTransitionが失敗した場合はエラーを返す', async () => {
@@ -586,7 +590,7 @@ describe('updateQuizControl', () => {
         mockSupabase as any
       );
 
-      const answerControl: QuizControl = {
+      const answerCheckControl: QuizControl = {
         ...mockQuizControl,
         current_screen: 'question',
         current_question_id: 1,
@@ -596,14 +600,14 @@ describe('updateQuizControl', () => {
       (queryBuilder.select).mockReturnThis();
       (queryBuilder.eq).mockReturnThis();
       (queryBuilder.single).mockResolvedValue({
-        data: answerControl,
+        data: answerCheckControl,
         error: null,
       });
       (mockSupabase.from).mockReturnValue(queryBuilder);
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'answer',
+        nextScreen: 'answer_check',
       };
 
       const result = await updateQuizControl(input);
