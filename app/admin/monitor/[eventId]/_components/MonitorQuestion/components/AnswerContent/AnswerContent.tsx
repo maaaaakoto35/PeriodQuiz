@@ -43,6 +43,7 @@ export function AnswerContent({
               selectionCount={(showSelectionCount ?? !!isAnswer) ? choice.selectionCount || 0 : null}
               isCorrect={!!isAnswer && choice.id === correctChoiceId}
               rowIndex={0}
+              answerText={isAnswer ? choice.answerText : null}
             />
           ))}
         </div>
@@ -58,6 +59,7 @@ export function AnswerContent({
               selectionCount={(showSelectionCount ?? !!isAnswer) ? choice.selectionCount || 0 : null}
               isCorrect={!!isAnswer && choice.id === correctChoiceId}
               rowIndex={1}
+              answerText={isAnswer ? choice.answerText : null}
             />
           ))}
         </div>

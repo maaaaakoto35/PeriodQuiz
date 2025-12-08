@@ -59,10 +59,10 @@ export async function getAnswerForMonitor(
       };
     }
 
-    // 選択肢を取得（is_correct を含む）
+    // 選択肢を取得（is_correct と answer_text を含む）
     const { data: choices, error: choicesError } = await supabase
       .from('choices')
-      .select('id, text, image_url, is_correct, order_num')
+      .select('id, text, image_url, is_correct, order_num, answer_text')
       .eq('question_id', questionId)
       .order('order_num', { ascending: true });
 
@@ -92,6 +92,7 @@ export async function getAnswerForMonitor(
       orderNum: c.order_num,
       isCorrect: c.is_correct,
       selectionCount: selectionCountMap.get(c.id) || 0,
+      answerText: c.answer_text,
     }));
 
     return {

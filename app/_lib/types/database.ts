@@ -126,6 +126,7 @@ export type Database = {
       }
       choices: {
         Row: {
+          answer_text: string | null
           created_at: string
           id: number
           image_url: string | null
@@ -135,6 +136,7 @@ export type Database = {
           text: string
         }
         Insert: {
+          answer_text?: string | null
           created_at?: string
           id?: number
           image_url?: string | null
@@ -144,6 +146,7 @@ export type Database = {
           text: string
         }
         Update: {
+          answer_text?: string | null
           created_at?: string
           id?: number
           image_url?: string | null

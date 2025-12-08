@@ -7,6 +7,7 @@ interface AnswerChoiceCardProps {
   selectionCount: number | null;
   isCorrect: boolean;
   rowIndex: number;
+  answerText?: string | null;
 }
 
 /**
@@ -19,7 +20,11 @@ export function AnswerChoiceCard({
   selectionCount,
   isCorrect,
   rowIndex,
+  answerText,
 }: AnswerChoiceCardProps) {
+  // 正解発表時で answerText がある場合はそれを使用、なければ通常の choiceText
+  const displayText = answerText || choiceText;
+
   const getBadgeGradient = () => {
     switch (choiceIndex) {
       case 0:
@@ -94,7 +99,7 @@ export function AnswerChoiceCard({
                 isCorrect ? "text-amber-400" : "text-white"
               }`}
             >
-              {choiceText}
+              {displayText}
             </div>
           </div>
 

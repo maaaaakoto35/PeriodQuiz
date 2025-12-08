@@ -10,6 +10,11 @@ export const choiceSchema = z.object({
     .max(200, '選択肢は200文字以内で入力してください'),
   imageUrl: z.string().url('画像URLが無効です').optional().or(z.literal('')),
   isCorrect: z.boolean(),
+  answerText: z
+    .string()
+    .max(200, '正解発表用テキストは200文字以内で入力してください')
+    .optional()
+    .or(z.literal('')),
 });
 
 /**

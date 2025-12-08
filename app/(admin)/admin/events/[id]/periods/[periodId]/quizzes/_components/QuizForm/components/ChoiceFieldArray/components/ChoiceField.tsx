@@ -108,6 +108,29 @@ export function ChoiceField({
           この選択肢が正解
         </label>
       </div>
+
+      {/* 正解発表用テキスト */}
+      <div>
+        <label className="text-xs font-medium text-gray-600 block mb-1">
+          正解発表用テキスト （任意）
+        </label>
+        <input
+          type="text"
+          value={choice.answerText || ''}
+          onChange={(e) => onUpdateField("answerText", e.target.value)}
+          maxLength={200}
+          className="
+            w-full rounded-md border border-gray-300
+            bg-white px-3 py-2
+            text-sm text-gray-900
+            focus:border-blue-500 focus:outline-none
+            focus:ring-1 focus:ring-blue-500
+          "
+        />
+        <div className="mt-1 text-xs text-gray-500">
+          モニター画面の正解発表時に表示されます。空欄の場合は選択肢のテキストが使用されます。
+        </div>
+      </div>
     </div>
   );
 }
