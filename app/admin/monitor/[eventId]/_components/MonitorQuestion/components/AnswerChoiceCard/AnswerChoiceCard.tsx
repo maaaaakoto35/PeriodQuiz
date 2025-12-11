@@ -57,11 +57,9 @@ export function AnswerChoiceCard({
       )}
 
       <div
-        className={`w-80 min-h-20 rounded-xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-sky-500 flex justify-center items-center gap-2.5 ${
+        className={`w-80 min-h-20 h-full rounded-xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] outline outline-1 outline-offset-[-1px] outline-sky-500 flex justify-center items-center gap-2.5 ${
           isCorrect ? "relative" : ""
-        } ${
-          !isCorrect && "bg-gradient-to-b from-black/10 to-blue-700/60"
-        }`}
+        } ${!isCorrect && "bg-gradient-to-b from-black/10 to-blue-700/60"}`}
       >
         {/* 正解時の2層背景 */}
         {isCorrect && (
