@@ -2,6 +2,7 @@
 
 import {
   MonitorWaiting,
+  MonitorQuestionReading,
   MonitorQuestion,
   MonitorAnswerCheck,
   MonitorBreak,
@@ -28,6 +29,8 @@ export function MonitorSection() {
     switch (currentScreen) {
       case "waiting":
         return <MonitorWaiting />;
+      case "question_reading":
+        return <MonitorQuestionReading />;
       case "question":
         return <MonitorQuestion isAnswer={false} />;
       case "answer_check":

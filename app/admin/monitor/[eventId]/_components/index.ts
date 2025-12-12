@@ -1,5 +1,6 @@
 export { MonitorSection } from './MonitorSection';
 export { MonitorWaiting } from './MonitorWaiting';
+export { MonitorQuestionReading } from './MonitorQuestionReading';
 export { MonitorQuestion } from './MonitorQuestion';
 export { MonitorAnswerCheck } from './MonitorAnswerCheck';
 export { MonitorBreak } from './MonitorBreak';

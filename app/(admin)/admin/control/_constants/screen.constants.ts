@@ -5,6 +5,7 @@ import { QuizScreen } from '@/app/_lib/types/quiz';
  */
 export const SCREEN_NAMES: Record<QuizScreen, string> = {
   waiting: '待機中',
+  question_reading: '問題読み上げ',
   question: '問題表示',
   answer_check: 'アンサーチェック',
   answer: '正解発表',
@@ -18,6 +19,7 @@ export const SCREEN_NAMES: Record<QuizScreen, string> = {
  */
 export const ALL_SCREENS: QuizScreen[] = [
   'waiting',
+  'question_reading',
   'question',
   'answer_check',
   'answer',

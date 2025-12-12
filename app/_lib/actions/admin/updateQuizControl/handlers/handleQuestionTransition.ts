@@ -136,6 +136,29 @@ export async function handleQuestionTransition(
       };
     }
 
+    // question_reading → question の場合は既存の問題情報を使用して question_displays を insert
+    if (currentControl.current_screen === 'question_reading') {
+      if (!currentControl.current_period_id || !currentControl.current_question_id) {
+        return {
+          success: false,
+          error: '問題情報が見つかりません',
+        };
+      }
+
+      // question_reading では既に問題が決定しているので、question_displays を insert
+      await createQuestionDisplay(
+        supabase,
+        currentControl.current_question_id,
+        currentControl.current_period_id
+      );
+
+      return {
+        success: true,
+        currentPeriodId: currentControl.current_period_id,
+        currentQuestionId: currentControl.current_question_id,
+      };
+    }
+
     return {
       success: false,
       error: '無効な画面遷移です',
