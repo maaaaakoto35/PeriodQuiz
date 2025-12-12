@@ -472,7 +472,6 @@ describe('updateQuizControl', () => {
       (queryBuilder.update).mockReturnThis();
 
       // periods取得とperiod_questions取得を順番にモック
-      let callCount = 0;
       (mockSupabase.from as any).mockImplementation((table: string) => {
         if (table === 'quiz_control') {
           return queryBuilder;
