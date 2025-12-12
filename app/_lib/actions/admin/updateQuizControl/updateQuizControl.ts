@@ -86,6 +86,135 @@ export async function updateQuizControl(
       updated_at: new Date().toISOString(),
     };
 
+    // question_reading画面に遷移時: 次問題決定（question_displays は insert しない）
+    if (nextScreen === 'question_reading') {
+      if (currentScreen === 'waiting') {
+        // waiting → question_reading: 第1ピリオドの第1問を決定
+        const { data: firstPeriod, error: periodError } = await supabase
+          .from('periods')
+          .select('id')
+          .eq('event_id', eventId)
+          .order('order_num', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (periodError || !firstPeriod) {
+          return {
+            success: false,
+            error: 'ピリオドが見つかりません',
+          };
+        }
+
+        const { data: firstQuestion, error: questionError } = await supabase
+          .from('questions')
+          .select('id')
+          .eq('period_id', firstPeriod.id)
+          .order('order_num', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (questionError || !firstQuestion) {
+          return {
+            success: false,
+            error: '問題が見つかりません',
+          };
+        }
+
+        updateData.current_period_id = firstPeriod.id;
+        updateData.current_question_id = firstQuestion.id;
+      } else if (
+        currentScreen === 'answer' ||
+        currentScreen === 'break' ||
+        currentScreen === 'period_result'
+      ) {
+        // answer, break, period_result → question_reading: 次の問題を決定
+        // handleQuestionTransitionを利用するが、question_displaysはinsertしない
+        // 一時的にcurrent_screenを変更して呼び出す
+        const tempControl = { ...currentControl, current_screen: currentScreen };
+        const { data: periods } = await supabase
+          .from('periods')
+          .select('id, order_num')
+          .eq('event_id', eventId)
+          .order('order_num', { ascending: true });
+
+        if (!periods || periods.length === 0) {
+          return {
+            success: false,
+            error: 'ピリオドが見つかりません',
+          };
+        }
+
+        // 次の問題を取得（getNextQuestion関数を直接使用）
+        const { getNextQuestion, getNextPeriod } = await import('./utils');
+
+        if (currentScreen === 'answer' || currentScreen === 'break') {
+          // 同じピリオド内の次の問題を取得
+          if (!currentControl.current_period_id) {
+            return {
+              success: false,
+              error: 'ピリオド情報が見つかりません',
+            };
+          }
+
+          const nextQuestionId = await getNextQuestion(
+            supabase,
+            currentControl.current_period_id,
+            currentControl.current_question_id
+          );
+
+          if (nextQuestionId === null) {
+            // 次の問題がない場合はエラー
+            return {
+              success: false,
+              error:
+                'これ以上の問題が存在しません。ピリオド結果画面へ遷移してください。',
+            };
+          }
+
+          updateData.current_question_id = nextQuestionId;
+        } else if (currentScreen === 'period_result') {
+          // 次のピリオドの第1問を取得
+          if (!currentControl.current_period_id) {
+            return {
+              success: false,
+              error: 'ピリオド情報が見つかりません',
+            };
+          }
+
+          const nextPeriodId = await getNextPeriod(
+            supabase,
+            currentControl.current_period_id,
+            eventId
+          );
+
+          if (!nextPeriodId) {
+            return {
+              success: false,
+              error:
+                '次のピリオドが見つかりません。最終問題を終えた可能性があります',
+            };
+          }
+
+          const nextQuestionId = await getNextQuestion(
+            supabase,
+            nextPeriodId,
+            null
+          );
+
+          if (!nextQuestionId) {
+            return {
+              success: false,
+              error:
+                '次のピリオドに問題が見つかりません。最終問題を終えた可能性があります',
+            };
+          }
+
+          updateData.current_period_id = nextPeriodId;
+          updateData.current_question_id = nextQuestionId;
+        }
+      }
+    }
+
     // question画面に遷移時: question_displays を insert + 次問題決定
     if (nextScreen === 'question') {
       const result = await handleQuestionTransition(
