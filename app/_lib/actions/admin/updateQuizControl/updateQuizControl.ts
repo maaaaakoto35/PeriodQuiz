@@ -8,6 +8,7 @@ import {
   handleQuestionTransition,
   handleAnswerTransition,
 } from './handlers';
+import { getNextPeriod, getNextQuestion } from '@/app/_lib/actions/admin/updateQuizControl/utils';
 
 export interface UpdateQuizControlInput {
   eventId: number;
@@ -130,7 +131,6 @@ export async function updateQuizControl(
         // answer, break, period_result → question_reading: 次の問題を決定
         // handleQuestionTransitionを利用するが、question_displaysはinsertしない
         // 一時的にcurrent_screenを変更して呼び出す
-        const tempControl = { ...currentControl, current_screen: currentScreen };
         const { data: periods } = await supabase
           .from('periods')
           .select('id, order_num')
@@ -143,9 +143,6 @@ export async function updateQuizControl(
             error: 'ピリオドが見つかりません',
           };
         }
-
-        // 次の問題を取得（getNextQuestion関数を直接使用）
-        const { getNextQuestion, getNextPeriod } = await import('./utils');
 
         if (currentScreen === 'answer' || currentScreen === 'break') {
           // 同じピリオド内の次の問題を取得
