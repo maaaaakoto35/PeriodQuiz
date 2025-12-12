@@ -27,7 +27,7 @@
 
 .sentence {
   min-width: 80%;
-  max-height: 800px;
+  max-height: 500px;
   padding: 24px;
   display: flex;
   flex-direction: column;
