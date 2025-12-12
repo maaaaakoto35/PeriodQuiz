@@ -7,6 +7,7 @@ describe('screen.constants', () => {
     it('should have mapping for all quiz screens', () => {
       const expectedScreens: QuizScreen[] = [
         'waiting',
+        'question_reading',
         'question',
         'answer_check',
         'answer',
@@ -24,6 +25,7 @@ describe('screen.constants', () => {
 
     it('should return Japanese display names', () => {
       expect(SCREEN_NAMES.waiting).toBe('待機中');
+      expect(SCREEN_NAMES.question_reading).toBe('問題読み上げ');
       expect(SCREEN_NAMES.question).toBe('問題表示');
       expect(SCREEN_NAMES.answer_check).toBe('アンサーチェック');
       expect(SCREEN_NAMES.answer).toBe('正解発表');
@@ -37,6 +39,7 @@ describe('screen.constants', () => {
     it('should contain all quiz screens', () => {
       const expectedScreens: QuizScreen[] = [
         'waiting',
+        'question_reading',
         'question',
         'answer_check',
         'answer',
@@ -49,7 +52,7 @@ describe('screen.constants', () => {
     });
 
     it('should have correct length', () => {
-      expect(ALL_SCREENS).toHaveLength(7);
+      expect(ALL_SCREENS).toHaveLength(8);
     });
 
     it('should not have duplicates', () => {

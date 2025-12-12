@@ -1,0 +1,4 @@
+.container {
+  /* 背景は layout.module.css で設定されているので、ここでは何も表示しない */
+  min-height: 100vh;
+}

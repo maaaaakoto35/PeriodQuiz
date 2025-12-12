@@ -20,6 +20,10 @@ export const BGM_TRACKS: Record<QuizScreen, BGMTrack> = {
     url: '/audio/waiting.mp3',
     loop: true,
   },
+  question_reading: {
+    url: '/audio/question_reading.mp3',
+    loop: false,
+  },
   question: {
     url: '/audio/question.mp3',
     loop: false,

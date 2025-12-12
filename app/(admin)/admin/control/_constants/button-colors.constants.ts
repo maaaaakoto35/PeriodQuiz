@@ -18,6 +18,12 @@ export const BUTTON_COLORS: Record<QuizScreen, ButtonColorScheme> = {
     hover: 'hover:bg-slate-100 hover:border-slate-400',
     text: 'text-slate-900',
   },
+  question_reading: {
+    bg: 'bg-orange-50',
+    border: 'border-orange-300',
+    hover: 'hover:bg-orange-100 hover:border-orange-400',
+    text: 'text-orange-900',
+  },
   question: {
     bg: 'bg-amber-50',
     border: 'border-amber-300',
