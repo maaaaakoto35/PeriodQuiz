@@ -310,7 +310,7 @@ describe('useQuizControlTransition', () => {
       );
 
       const transitions = result.current.getPossibleTransitions();
-      expect(transitions).toContain('question');
+      expect(transitions).toContain('question_reading');
     });
 
     it('question画面から可能な遷移先を返す', () => {

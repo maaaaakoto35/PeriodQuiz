@@ -165,7 +165,7 @@ describe('updateQuizControl', () => {
   });
 
   describe('画面遷移のバリデーション', () => {
-    it('待機画面から問題画面への遷移は許可される', async () => {
+    it('待機画面から問題読み上げ画面への遷移は許可される', async () => {
       const mockSupabase = createMockSupabase();
 
       vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
@@ -195,14 +195,14 @@ describe('updateQuizControl', () => {
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'question',
+        nextScreen: 'question_reading',
       };
 
       const result = await updateQuizControl(input);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.currentScreen).toBe('question');
+        expect(result.data.currentScreen).toBe('question_reading');
       }
     });
 
@@ -283,19 +283,11 @@ describe('updateQuizControl', () => {
       }
     });
 
-    it('答え画面から問題画面への遷移は許可される', async () => {
+    it('答え画面から問題読み上げ画面への遷移は許可される', async () => {
       const mockSupabase = createMockSupabase();
 
       vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
         authenticated: true,
-      });
-      vi.spyOn(
-        handlersModule,
-        'handleQuestionTransition'
-      ).mockResolvedValue({
-        success: true,
-        currentPeriodId: 1,
-        currentQuestionId: 2,
       });
       vi.spyOn(serverAdminModule, 'createAdminClient').mockReturnValue(
         mockSupabase as any
@@ -304,29 +296,77 @@ describe('updateQuizControl', () => {
       const answerControl: QuizControl = {
         ...mockQuizControl,
         current_screen: 'answer',
+        current_period_id: 1,
         current_question_id: 1,
       };
 
       const queryBuilder = mockSupabase.from('quiz_control');
       (queryBuilder.select).mockReturnThis();
       (queryBuilder.eq).mockReturnThis();
+      (queryBuilder.order).mockReturnThis();
       (queryBuilder.single).mockResolvedValue({
         data: answerControl,
         error: null,
       });
       (queryBuilder.update).mockReturnThis();
-      (mockSupabase.from).mockReturnValue(queryBuilder);
+
+      // 複数のテーブルへのアクセスをモック
+      let periodQuestionsCallCount = 0;
+      (mockSupabase.from as any).mockImplementation((table: string) => {
+        if (table === 'quiz_control') {
+          return queryBuilder;
+        }
+        if (table === 'periods') {
+          // periodsテーブルは配列を返す（singleではない）
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockResolvedValue({
+              data: [{ id: 1, order_num: 1 }],
+              error: null,
+            }),
+          };
+        }
+        if (table === 'period_questions') {
+          periodQuestionsCallCount++;
+          // 最初のcall: 現在の問題のorder_num取得
+          // 2番目のcall: 次の問題の取得
+          if (periodQuestionsCallCount === 1) {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockReturnThis(),
+              single: vi.fn().mockResolvedValue({
+                data: { order_num: 1 },
+                error: null,
+              }),
+            };
+          } else {
+            return {
+              select: vi.fn().mockReturnThis(),
+              eq: vi.fn().mockReturnThis(),
+              gt: vi.fn().mockReturnThis(),
+              order: vi.fn().mockReturnThis(),
+              limit: vi.fn().mockReturnThis(),
+              maybeSingle: vi.fn().mockResolvedValue({
+                data: { question_id: 2 },
+                error: null,
+              }),
+            };
+          }
+        }
+        return queryBuilder;
+      });
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'question',
+        nextScreen: 'question_reading',
       };
 
       const result = await updateQuizControl(input);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.currentScreen).toBe('question');
+        expect(result.data.currentScreen).toBe('question_reading');
       }
     });
 
@@ -407,16 +447,9 @@ describe('updateQuizControl', () => {
     });
   });
 
-  describe('question画面への遷移', () => {
-    it('question画面への遷移時にhandleQuestionTransitionが呼ばれる', async () => {
+  describe('question_reading画面への遷移', () => {
+    it('waiting画面からquestion_reading画面への遷移時に第1ピリオドの第1問が設定される', async () => {
       const mockSupabase = createMockSupabase();
-      const handleQuestionSpy = vi
-        .spyOn(handlersModule, 'handleQuestionTransition')
-        .mockResolvedValue({
-          success: true,
-          currentPeriodId: 1,
-          currentQuestionId: 1,
-        });
 
       vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
         authenticated: true,
@@ -426,99 +459,54 @@ describe('updateQuizControl', () => {
       );
 
       const queryBuilder = mockSupabase.from('quiz_control');
+
+      // quiz_control取得
       (queryBuilder.select).mockReturnThis();
       (queryBuilder.eq).mockReturnThis();
+      (queryBuilder.order).mockReturnThis();
+      (queryBuilder.limit).mockReturnThis();
       (queryBuilder.single).mockResolvedValue({
         data: mockQuizControl,
         error: null,
       });
       (queryBuilder.update).mockReturnThis();
-      (mockSupabase.from).mockReturnValue(queryBuilder);
+
+      // periods取得とperiod_questions取得を順番にモック
+      let callCount = 0;
+      (mockSupabase.from as any).mockImplementation((table: string) => {
+        if (table === 'quiz_control') {
+          return queryBuilder;
+        }
+        if (table === 'periods') {
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockReturnThis(),
+            single: vi.fn().mockResolvedValue({
+              data: { id: 1 },
+              error: null,
+            }),
+          };
+        }
+        if (table === 'period_questions') {
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockReturnThis(),
+            single: vi.fn().mockResolvedValue({
+              data: { question_id: 5 },
+              error: null,
+            }),
+          };
+        }
+        return queryBuilder;
+      });
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'question',
-      };
-
-      await updateQuizControl(input);
-
-      expect(handleQuestionSpy).toHaveBeenCalledWith(
-        mockSupabase,
-        mockQuizControl,
-        1
-      );
-    });
-
-    it('handleQuestionTransitionが失敗した場合はエラーを返す', async () => {
-      const mockSupabase = createMockSupabase();
-
-      vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
-        authenticated: true,
-      });
-      vi.spyOn(
-        handlersModule,
-        'handleQuestionTransition'
-      ).mockResolvedValue({
-        success: false,
-        error: '次の問題が見つかりません',
-      });
-      vi.spyOn(serverAdminModule, 'createAdminClient').mockReturnValue(
-        mockSupabase as any
-      );
-
-      const queryBuilder = mockSupabase.from('quiz_control');
-      (queryBuilder.select).mockReturnThis();
-      (queryBuilder.eq).mockReturnThis();
-      (queryBuilder.single).mockResolvedValue({
-        data: mockQuizControl,
-        error: null,
-      });
-      (mockSupabase.from).mockReturnValue(queryBuilder);
-
-      const input: UpdateQuizControlInput = {
-        eventId: 1,
-        nextScreen: 'question',
-      };
-
-      const result = await updateQuizControl(input);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error).toBe('次の問題が見つかりません');
-      }
-    });
-
-    it('question画面への遷移時にperiod_idとquestion_idが更新される', async () => {
-      const mockSupabase = createMockSupabase();
-
-      vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
-        authenticated: true,
-      });
-      vi.spyOn(
-        handlersModule,
-        'handleQuestionTransition'
-      ).mockResolvedValue({
-        success: true,
-        currentPeriodId: 1,
-        currentQuestionId: 5,
-      });
-      vi.spyOn(serverAdminModule, 'createAdminClient').mockReturnValue(
-        mockSupabase as any
-      );
-
-      const queryBuilder = mockSupabase.from('quiz_control');
-      (queryBuilder.select).mockReturnThis();
-      (queryBuilder.eq).mockReturnThis();
-      (queryBuilder.single).mockResolvedValue({
-        data: mockQuizControl,
-        error: null,
-      });
-      (queryBuilder.update).mockReturnThis();
-      (mockSupabase.from).mockReturnValue(queryBuilder);
-
-      const input: UpdateQuizControlInput = {
-        eventId: 1,
-        nextScreen: 'question',
+        nextScreen: 'question_reading',
       };
 
       const result = await updateQuizControl(input);
@@ -527,6 +515,118 @@ describe('updateQuizControl', () => {
       if (result.success) {
         expect(result.data.currentPeriodId).toBe(1);
         expect(result.data.currentQuestionId).toBe(5);
+      }
+    });
+
+    it('ピリオドが見つからない場合はエラーを返す', async () => {
+      const mockSupabase = createMockSupabase();
+
+      vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
+        authenticated: true,
+      });
+      vi.spyOn(serverAdminModule, 'createAdminClient').mockReturnValue(
+        mockSupabase as any
+      );
+
+      const queryBuilder = mockSupabase.from('quiz_control');
+      (queryBuilder.select).mockReturnThis();
+      (queryBuilder.eq).mockReturnThis();
+      (queryBuilder.single).mockResolvedValue({
+        data: mockQuizControl,
+        error: null,
+      });
+
+      (mockSupabase.from as any).mockImplementation((table: string) => {
+        if (table === 'quiz_control') {
+          return queryBuilder;
+        }
+        if (table === 'periods') {
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockReturnThis(),
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: new Error('Not found'),
+            }),
+          };
+        }
+        return queryBuilder;
+      });
+
+      const input: UpdateQuizControlInput = {
+        eventId: 1,
+        nextScreen: 'question_reading',
+      };
+
+      const result = await updateQuizControl(input);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('ピリオドが見つかりません');
+      }
+    });
+
+    it('問題が見つからない場合はエラーを返す', async () => {
+      const mockSupabase = createMockSupabase();
+
+      vi.spyOn(checkAdminAuthModule, 'checkAdminAuth').mockResolvedValue({
+        authenticated: true,
+      });
+      vi.spyOn(serverAdminModule, 'createAdminClient').mockReturnValue(
+        mockSupabase as any
+      );
+
+      const queryBuilder = mockSupabase.from('quiz_control');
+      (queryBuilder.select).mockReturnThis();
+      (queryBuilder.eq).mockReturnThis();
+      (queryBuilder.single).mockResolvedValue({
+        data: mockQuizControl,
+        error: null,
+      });
+
+      (mockSupabase.from as any).mockImplementation((table: string) => {
+        if (table === 'quiz_control') {
+          return queryBuilder;
+        }
+        if (table === 'periods') {
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockReturnThis(),
+            single: vi.fn().mockResolvedValue({
+              data: { id: 1 },
+              error: null,
+            }),
+          };
+        }
+        if (table === 'period_questions') {
+          return {
+            select: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockReturnThis(),
+            single: vi.fn().mockResolvedValue({
+              data: null,
+              error: new Error('Not found'),
+            }),
+          };
+        }
+        return queryBuilder;
+      });
+
+      const input: UpdateQuizControlInput = {
+        eventId: 1,
+        nextScreen: 'question_reading',
+      };
+
+      const result = await updateQuizControl(input);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error).toBe('問題が見つかりません');
       }
     });
   });
@@ -659,7 +759,7 @@ describe('updateQuizControl', () => {
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'question',
+        nextScreen: 'question_reading',
       };
 
       const result = await updateQuizControl(input);
@@ -703,7 +803,7 @@ describe('updateQuizControl', () => {
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'question',
+        nextScreen: 'question_reading',
       };
 
       const result = await updateQuizControl(input);
@@ -787,7 +887,7 @@ describe('updateQuizControl', () => {
 
       const input: UpdateQuizControlInput = {
         eventId: 1,
-        nextScreen: 'question',
+        nextScreen: 'question_reading',
       };
 
       const result = await updateQuizControl(input);
