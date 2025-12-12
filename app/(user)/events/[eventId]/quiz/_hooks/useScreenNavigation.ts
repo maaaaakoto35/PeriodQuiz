@@ -28,6 +28,9 @@ export function useScreenNavigation({
       case "waiting":
         router.push(`/events/${eventId}/quiz/waiting`);
         break;
+      case "question_reading":
+        router.push(`/events/${eventId}/quiz/question_reading`);
+        break;
       case "question":
         // question/[id] ページでは current_question_id から問題を自動取得
         router.push(`/events/${eventId}/quiz/question/`);
