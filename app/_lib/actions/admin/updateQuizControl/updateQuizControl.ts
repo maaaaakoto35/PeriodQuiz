@@ -106,8 +106,8 @@ export async function updateQuizControl(
         }
 
         const { data: firstQuestion, error: questionError } = await supabase
-          .from('questions')
-          .select('id')
+          .from('period_questions')
+          .select('question_id')
           .eq('period_id', firstPeriod.id)
           .order('order_num', { ascending: true })
           .limit(1)
@@ -121,7 +121,7 @@ export async function updateQuizControl(
         }
 
         updateData.current_period_id = firstPeriod.id;
-        updateData.current_question_id = firstQuestion.id;
+        updateData.current_question_id = firstQuestion.question_id;
       } else if (
         currentScreen === 'answer' ||
         currentScreen === 'break' ||
